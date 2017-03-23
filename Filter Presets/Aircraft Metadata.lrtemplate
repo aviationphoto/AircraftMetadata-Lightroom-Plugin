@@ -1,0 +1,53 @@
+s = {
+	id = "0E6811DF-2B2C-414F-98D3-5DBE15333220",
+	internalName = "80 Aircraft Metadata",
+	title = "Aircraft Metadata",
+	type = "LibraryFilter",
+	value = {
+		columnBrowserActive = true,
+		columnBrowserDesc = {
+			{
+				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.airline",
+			},
+			{
+				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.registration",
+			},
+			{
+				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.aircraft_manufacturer",
+			},
+			{
+				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.aircraft_type",
+			},
+			{
+				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.aircraft_notes",
+			},
+			{
+				criteria = "dateHierarchy",
+			},
+		},
+		customLabel = false,
+		filtersActive = false,
+		gpsLocation = false,
+		gpsLocationNELatitude = "<nil>",
+		gpsLocationNELongitude = "<nil>",
+		gpsLocationSWLatitude = "<nil>",
+		gpsLocationSWLongitude = "<nil>",
+		label1 = false,
+		label2 = false,
+		label3 = false,
+		label4 = false,
+		label5 = false,
+		labelOp = "any",
+		minRating = 0,
+		noLabel = false,
+		pick = "<nil>",
+		ratingOp = ">=",
+		searchOp = "all",
+		searchString = "",
+		searchStringActive = false,
+		searchTarget = "all",
+		usage = "<nil>",
+		whichCopies = "<nil>",
+	},
+	version = 0,
+}
