@@ -6,5 +6,4 @@ LR Aircraft Metadata is a plugin for storing and handling Aircraft Metadata in y
 ![](/screenshots/metadata_panel.png)
 
 ## Requirements
-=========
 * Lightroom CC (2015)
