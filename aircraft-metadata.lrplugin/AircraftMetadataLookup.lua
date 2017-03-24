@@ -58,9 +58,10 @@ function AircraftMetadataImport.Jetphotos()
 		-- read photo name for debug messages
 		photoFilename = photo:getFormattedMetadata('fileName')
 		-- read aircraft registration from photo
-		searchRegistration = trim(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
+		searchRegistration = photo:getPropertyForPlugin(_PLUGIN, 'registration')
 		-- do we have a registration?
 		if not (searchRegistration == '' or searchRegistration == nil) then
+			searchRegistration = trim(searchRegistration)
 			-- is registration already in cache?
 			if not metadataCache[searchRegistration] then
 				countLookup = countLookup + 1
