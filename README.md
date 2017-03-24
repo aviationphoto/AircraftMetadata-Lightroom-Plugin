@@ -6,12 +6,15 @@ LR Aircraft Metadata is a plugin for storing and handling Aircraft Metadata in y
 ![](/screenshots/metadata_panel.png)
 
 ## Requirements
-* Lightroom CC (2015)
+* Lightroom 6/CC
 
 ## Installation
 :warning: It is highly recommended to backup your catalog before using LR Aircraft Metadata.
 
-Use the Plugin Manager like for any other Lightroom Plugin.
+* Download the [latest release at GitHub](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/releases/latest)
+* Unzip the downloaded archive
+* Copy the subdirectory "aircraft-metadata.lrplugin" to the machine where Lightroom is installed
+* In Lightroom: File --> Plugin Manager --> Add: Enter the path to the directory "aircraft-metadata.lrplugin" 
 
 ## Usage
 LR Aircraft Metadata can perform a automated metadata lookup against jetphotos.com
@@ -20,8 +23,7 @@ LR Aircraft Metadata can perform a automated metadata lookup against jetphotos.c
 * Select "Lookup Aircraft Metadata" from the Plug-in extras menu
 
 ## Known Issues
-* "Lookup Aircraft Metadata" overwrites existing values in the aircraft metadata fields
-* Splitting of aircraft manufacturer and type will not be correct if there is a blank in the manufacturers name
+[see Issue tracker](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/issues)
 
 ## Copyright
 Copyright(c) 2017, aviationphoto
