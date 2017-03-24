@@ -58,7 +58,7 @@ function AircraftMetadataImport.Jetphotos()
 		-- read photo name for debug messages
 		photoFilename = photo:getFormattedMetadata('fileName')
 		-- read aircraft registration from photo
-		searchRegistration = photo:getPropertyForPlugin(_PLUGIN, 'registration')
+		searchRegistration = trim(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
 		-- do we have a registration?
 		if not (searchRegistration == '' or searchRegistration == nil) then
 			-- is registration already in cache?
@@ -78,15 +78,13 @@ function AircraftMetadataImport.Jetphotos()
 					-- set label for photo
 				else
 					-- lookup returned something usefull
---					foundRegistration = extractMetadata(content, '>Reg: <', ' full info</a>', 'class="link">')
-					foundRegistration = extractMetadata(content, '>Reg:', ' photos</a>', 'class="link">')
+					foundRegistration = trim(extractMetadata(content, '/registration/', '"'))
 					if searchRegistration == foundRegistration then
-						foundAirline = extractMetadata(content, '>Airline:', '</a></span>', 'class="link">')
-						foundAircraft = extractMetadata(content, '>Aircraft:', '</a></span>', 'class="link">')
+						foundAirline = trim(extractMetadata(content, '/airline/', '"'))
+						foundAircraft = trim(extractMetadata(content, '/aircraft/', '"'))
 						-- split aircraft info in manufacturer and type 
-						-- rework needed - this will only work if manufacturers name has no blanks
-						foundAircraftManufacturer = string.sub(foundAircraft, 1, string.find(foundAircraft, ' ') - 1)
-						foundAircraftType = string.sub(foundAircraft, string.find(foundAircraft, ' ') + 1, string.len(foundAircraft))
+						foundAircraftManufacturer = trim(extractMetadata(content, 'manu=', '"'))
+						foundAircraftType = trim(string.sub(foundAircraft, string.find(foundAircraft, foundAircraftManufacturer) + string.len(foundAircraftManufacturer) + 1, string.len(foundAircraft)))
 						-- cache found metadata
 						metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType}
 						logger:info(photoFilename..' - metadata found: '..foundRegistration..', '..foundAirline..', '..foundAircraftManufacturer..', '..foundAircraftType)
@@ -102,7 +100,8 @@ function AircraftMetadataImport.Jetphotos()
 			if flagRegFound then
 				-- write metadata to image
 				catalog:withWriteAccessDo( "set aircraft metadata", 
-				function() 
+				function()
+					photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
 					photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
 					photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
 					photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
@@ -118,17 +117,19 @@ function AircraftMetadataImport.Jetphotos()
 end
 
 -- isolate metadata - sorry, creepy html parsing, no fancy things like JSON available
-function extractMetadata(payload, Token1, Token2, Token3)
+function extractMetadata(payload, Token1, Token2)
 	posStart, posEnd = string.find(payload, Token1)
 	line = string.sub(payload, posEnd + 1)
 --	LrDialogs.message('Lookup Airline - after Token 1', line, 'info')
 	posStart, posEnd = string.find(line, Token2)
 	line = string.sub(line, 1, posStart - 1)
 --	LrDialogs.message('Lookup Airline - after Token 2', line, 'info')
-	posStart, posEnd = string.find(line, Token3)
-	line = string.sub(line, posEnd + 1)
---	LrDialogs.message('Lookup Airline - after Token 3', line, 'info')
 	return line
+end
+
+-- remove trailing and leading whitespace from string.
+function trim(s)
+  return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
 import 'LrTasks'.startAsyncTask(AircraftMetadataImport.Jetphotos)
