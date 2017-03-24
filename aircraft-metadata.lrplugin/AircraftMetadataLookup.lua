@@ -70,7 +70,7 @@ function AircraftMetadataImport.Jetphotos()
 				content = LrHttp.get(lookupURL)
 --				LrDialogs.message(photoFilename, content, 'info')
 				-- check if lookup returned something usefull
-				if string.find(content, '>Reg: <') == nil then
+				if string.find(content, '>Reg:') == nil then
 					-- lookup returned nothing usefull
 					countRegNotFound = countRegNotFound + 1
 					flagRegFound = false
@@ -78,10 +78,11 @@ function AircraftMetadataImport.Jetphotos()
 					-- set label for photo
 				else
 					-- lookup returned something usefull
-					foundRegistration = extractMetadata(content, '>Reg: <', ' full info</a>', 'class="link">')
+--					foundRegistration = extractMetadata(content, '>Reg: <', ' full info</a>', 'class="link">')
+					foundRegistration = extractMetadata(content, '>Reg:', ' photos</a>', 'class="link">')
 					if searchRegistration == foundRegistration then
-						foundAirline = extractMetadata(content, '>Airline: <', '</a></span>', 'class="link">')
-						foundAircraft = extractMetadata(content, '>Aircraft: <', '</a></span>', 'class="link">')
+						foundAirline = extractMetadata(content, '>Airline:', '</a></span>', 'class="link">')
+						foundAircraft = extractMetadata(content, '>Aircraft:', '</a></span>', 'class="link">')
 						-- split aircraft info in manufacturer and type 
 						-- rework needed - this will only work if manufacturers name has no blanks
 						foundAircraftManufacturer = string.sub(foundAircraft, 1, string.find(foundAircraft, ' ') - 1)
@@ -120,12 +121,13 @@ end
 function extractMetadata(payload, Token1, Token2, Token3)
 	posStart, posEnd = string.find(payload, Token1)
 	line = string.sub(payload, posEnd + 1)
---	LrDialogs.message('Lookup Airline', line, 'info')
+--	LrDialogs.message('Lookup Airline - after Token 1', line, 'info')
 	posStart, posEnd = string.find(line, Token2)
 	line = string.sub(line, 1, posStart - 1)
---	LrDialogs.message('Lookup Airline', line, 'info')
+--	LrDialogs.message('Lookup Airline - after Token 2', line, 'info')
 	posStart, posEnd = string.find(line, Token3)
-	line = string.sub(line, posEnd + 1)	
+	line = string.sub(line, posEnd + 1)
+--	LrDialogs.message('Lookup Airline - after Token 3', line, 'info')
 	return line
 end
 
