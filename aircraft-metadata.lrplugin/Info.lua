@@ -28,7 +28,15 @@ return {
 
 	LrPluginInfoUrl = 'https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin',
 
+	-- show in plugin menu
 	LrExportMenuItems = {
+		{
+			title = 'Lookup Aircraft Metadata',
+			file = 'AircraftMetadataLookup.lua',
+		},
+	},
+	--show in library menu
+	LrLibraryMenuItems = {
 		{
 			title = 'Lookup Aircraft Metadata',
 			file = 'AircraftMetadataLookup.lua',
