@@ -102,10 +102,14 @@ function AircraftMetadataImport.Jetphotos()
 						foundAircraft = trim(extractMetadata(content, '/aircraft/', '"'))
 						-- split aircraft info in manufacturer and type
 						foundAircraftManufacturer = trim(extractMetadata(content, 'manu=', '"'))
+						-- check if manufacturer is set
+						if foundAircraftManufacturer == '' then
+							foundAircraftManufacturer = 'not set'
+						end
 						foundAircraftType = trim(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
 						-- cache found metadata
 						metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType}
-						logger:info(photoFilename..' - metadata found: '..foundRegistration..', '..foundAirline..', '..foundAircraftManufacturer..', '..foundAircraftType)
+						logger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
 					else
 						-- no, lookup returned wrong registration
 						logger:info(photoFilename..' -  lookup returned wrong registration: >>'..foundRegistration..'<< instead of >>'..searchRegistration..'<<')
