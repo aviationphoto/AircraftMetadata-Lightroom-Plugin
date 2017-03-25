@@ -83,9 +83,9 @@ function AircraftMetadataImport.Jetphotos()
 					if searchRegistration == foundRegistration then
 						foundAirline = trim(extractMetadata(content, '/airline/', '"'))
 						foundAircraft = trim(extractMetadata(content, '/aircraft/', '"'))
-						-- split aircraft info in manufacturer and type 
+						-- split aircraft info in manufacturer and type
 						foundAircraftManufacturer = trim(extractMetadata(content, 'manu=', '"'))
-						foundAircraftType = trim(string.sub(foundAircraft, string.find(foundAircraft, foundAircraftManufacturer) + string.len(foundAircraftManufacturer) + 1, string.len(foundAircraft)))
+						foundAircraftType = trim(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
 						-- cache found metadata
 						metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType}
 						logger:info(photoFilename..' - metadata found: '..foundRegistration..', '..foundAirline..', '..foundAircraftManufacturer..', '..foundAircraftType)
@@ -100,7 +100,7 @@ function AircraftMetadataImport.Jetphotos()
 			end
 			if flagRegFound then
 				-- write metadata to image
-				catalog:withWriteAccessDo( "set aircraft metadata", 
+				catalog:withWriteAccessDo( "set aircraft metadata",
 				function()
 					photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
 					photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
@@ -128,7 +128,7 @@ function extractMetadata(payload, Token1, Token2)
 	return line
 end
 
--- remove trailing and leading whitespace from string.
+-- remove trailing and leading whitespace from string
 function trim(s)
   return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
