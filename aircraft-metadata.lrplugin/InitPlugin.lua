@@ -1,5 +1,5 @@
 --[[----------------------------------------------------------------------------
-Info.lua
+InitPlugin.lua
 This file is part of LR Aircraft Metadata.
 Copyright(c) 2017, aviationphoto
 
@@ -16,34 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
-return {
-	LrSdkVersion = 5.0,
-	VERSION = {major=1, minor=1, revision=1,},
+local LrPrefs = import 'LrPrefs'.prefsForPlugin()
 
-	LrPluginName = 'Aircraft Metadata',
-	LrToolkitIdentifier = 'ch.aviationphoto.aircraftmetadata',
-
-	LrMetadataProvider = 'MetadataProvider.lua',
-	LrMetadataTagsetFactory = 'MetadataTagset.lua',
-	LrPluginInfoProvider = 'PluginInfoProvider.lua',
-	LrInitPlugin  = 'InitPlugin.lua',
-	LrShutdownPlugin = 'ShutdownPlugin.lua',
-
-	LrPluginInfoUrl = 'https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin',
-
-	-- show in plugin menu
-	LrExportMenuItems = {
-		{
-			title = 'Lookup Aircraft Metadata',
-			file = 'AircraftMetadataLookup.lua',
-		},
-	},
-	--show in library menu
-	LrLibraryMenuItems = {
-		{
-			title = 'Lookup Aircraft Metadata',
-			file = 'AircraftMetadataLookup.lua',
-		},
-	},
-
-}
+LrPrefs.prefLookupUrl = 'https://www.jetphotos.com/showphotos.php?regsearch='
+LrPrefs.flagLogging = false
