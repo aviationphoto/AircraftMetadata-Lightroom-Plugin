@@ -22,14 +22,20 @@ local LrFileUtils = import 'LrFileUtils'
 local LrPathUtils = import 'LrPathUtils'
 local LrHttp = import 'LrHttp'
 local LrProgressScope = import 'LrProgressScope'
+local LrErrors = import 'LrErrors'
+local LrPrefs = import 'LrPrefs'.prefsForPlugin()
 
-local logger = import 'LrLogger'('AircraftMetadatLookup')
-logger:enable( 'logfile' )
---logger:disable()
-
-local baseURL = 'https://www.jetphotos.com/showphotos.php?regsearch='
+-- local baseURL = 'https://www.jetphotos.com/showphotos.php?regsearch='
 
 local AircraftMetadataImport = {}
+
+local logger = import 'LrLogger'('AircraftMetadatLookup')
+-- check if logging enabled
+if LrPrefs.flagLogging then
+	logger:enable('logfile')
+else
+	logger:disable()
+end
 
 function AircraftMetadataImport.Jetphotos()
 	local metadataCache = {}
@@ -43,7 +49,15 @@ function AircraftMetadataImport.Jetphotos()
 	local flagRegFound = true
 	local flagRun = true
 
-	clearLogfile()
+	loadPrefs()
+
+	-- check if logging enabled
+	if LrPrefs.flagLogging then
+		logger:enable('logfile')
+		clearLogfile()
+	else
+		logger:disable()
+	end
 
 	logger:info('>>>> running lookup')
 	-- get a reference to the photos within the current catalog
@@ -179,5 +193,16 @@ function clearLogfile()
 			end
 	end
 end
+
+-- load saved preferences
+function loadPrefs()
+	-- lookup URL
+	if not (LrPrefs.prefLookupUrl == nil or LrPrefs.prefLookupUrl == '') then
+		baseURL = LrPrefs.prefLookupUrl
+	else
+		LrErrors.throwUserError('Please set URL for lookup')
+	end
+end
+
 
 import 'LrTasks'.startAsyncTask(AircraftMetadataImport.Jetphotos)
