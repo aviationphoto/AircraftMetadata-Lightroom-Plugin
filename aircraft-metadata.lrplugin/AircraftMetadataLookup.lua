@@ -41,108 +41,116 @@ function AircraftMetadataImport.Jetphotos()
 	local countRegNotFound = 0
 
 	local flagRegFound = true
+	local flagRun = true
 
-	-- clear old logfile
-	local logPath = LrPathUtils.child(LrPathUtils.getStandardFilePath('documents'), 'AircraftMetadatLookup.log')
-		if LrFileUtils.exists( logPath ) then
-			success, reason = LrFileUtils.delete( logPath )
-			if not success then
-				logger:error('Error deleting existing logfile!'..reason)
-			end
-	end
-	-- define progress bar
-	local progressScope = LrProgressScope({title = 'Performing Aircraft Metadata lookup'})
-	progressScope:setCancelable(false)
+	clearLogfile()
 
 	logger:info('>>>> running lookup')
 	-- get a reference to the photos within the current catalog
 	local catalog = LrApplication.activeCatalog()
 	local selectedPhotos = catalog:getTargetPhotos()
-	-- count selected photos
-	for _ in pairs(selectedPhotos) do
-		countSelected = countSelected + 1
-	end
-	logger:info('selected photos: '..countSelected)
-	-- loop through each of the photos
-	for _, photo in ipairs (selectedPhotos) do
-		countProcessed = countProcessed + 1
-		flagRegFound = true
-		-- read photo name
-		local photoFilename = photo:getFormattedMetadata('fileName')
 
-		-- read aircraft registration from photo
-		searchRegistration = photo:getPropertyForPlugin(_PLUGIN, 'registration')
-		-- do we have a registration?
-		if not (searchRegistration == '' or searchRegistration == nil) then
-			-- yes, photo has registration
-			local searchRegistration = trim(searchRegistration)
-			-- is registration already in cache?
-			if not metadataCache[searchRegistration] then
-				-- no, we need to do a lookup
-				countLookup = countLookup + 1
-				lookupURL = baseURL..searchRegistration
-				logger:info(photoFilename..' - looking up registration at '..lookupURL..' for: >>'..searchRegistration..'<<')
-				-- do the lookup
-				content = LrHttp.get(lookupURL)
-				--LrDialogs.message(photoFilename, content, 'info')
-				-- check if lookup returned something usefull
-				if string.find(content, '>Reg:') == nil then
-					-- lookup returned nothing usefull
-					countRegNotFound = countRegNotFound + 1
-					flagRegFound = false
-					logger:info(photoFilename..' - no metadata found for registration >>'..searchRegistration..'<<')
-					-- mark photo with keyword reg_not_found
-				else
-					-- lookup returned something usefull
-					foundRegistration = trim(extractMetadata(content, '/registration/', '"'))
-					-- check if lookup returned the right registration
-					if searchRegistration == foundRegistration then
-						-- yes, isolate metadata
-						foundAirline = trim(extractMetadata(content, '/airline/', '"'))
-						foundAircraft = trim(extractMetadata(content, '/aircraft/', '"'))
-						-- split aircraft info in manufacturer and type
-						foundAircraftManufacturer = trim(extractMetadata(content, 'manu=', '"'))
-						-- check if manufacturer is set
-						if foundAircraftManufacturer == '' then
-							foundAircraftManufacturer = 'not set'
-						end
-						foundAircraftType = trim(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
-						-- cache found metadata
-						metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType}
-						logger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
+	-- check if user selected at least one photos
+	if catalog:getTargetPhoto() == nil then
+		local dialogAction = LrDialogs.confirm('Aircraft Metadata Lookup', 'No photo selected - run lookup on all photos in filmstrip?', 'Yes', 'No')
+		if dialogAction == 'cancel' then
+			flagRun = false
+			logger:info('no active photo selection - user canceled run on entire filmstrip')
+		end
+	end
+
+	-- check if user hit cancel
+	if flagRun then
+		-- define progress bar
+		local progressScope = LrProgressScope({title = 'Aircraft Metadata Lookup'})
+		progressScope:setCancelable(false)
+		-- count selected photos
+		for _ in pairs(selectedPhotos) do
+			countSelected = countSelected + 1
+		end
+		logger:info('performing lookup for '..countSelected..' selected photos')
+		-- loop through each of the photos
+		for _, photo in ipairs (selectedPhotos) do
+			countProcessed = countProcessed + 1
+			flagRegFound = true
+			-- read photo name
+			local photoFilename = photo:getFormattedMetadata('fileName')
+
+			-- read aircraft registration from photo
+			searchRegistration = photo:getPropertyForPlugin(_PLUGIN, 'registration')
+			-- do we have a registration?
+			if not (searchRegistration == '' or searchRegistration == nil) then
+				-- yes, photo has registration
+				local searchRegistration = trim(searchRegistration)
+				-- is registration already in cache?
+				if not metadataCache[searchRegistration] then
+					-- no, we need to do a lookup
+					countLookup = countLookup + 1
+					lookupURL = baseURL..searchRegistration
+					logger:info(photoFilename..' - looking up registration at '..lookupURL..' for: >>'..searchRegistration..'<<')
+					-- do the lookup
+					content = LrHttp.get(lookupURL)
+					--LrDialogs.message(photoFilename, content, 'info')
+					-- check if lookup returned something usefull
+					if string.find(content, '>Reg:') == nil then
+						-- lookup returned nothing usefull
+						countRegNotFound = countRegNotFound + 1
+						flagRegFound = false
+						logger:info(photoFilename..' - no metadata found for registration >>'..searchRegistration..'<<')
+						-- mark photo with keyword reg_not_found
 					else
-						-- no, lookup returned wrong registration
-						logger:info(photoFilename..' -  lookup returned wrong registration: >>'..foundRegistration..'<< instead of >>'..searchRegistration..'<<')
-						countNoReg = countNoReg + 1
-						-- mark photo with keyword wrong_reg
+						-- lookup returned something usefull
+						foundRegistration = trim(extractMetadata(content, '/registration/', '"'))
+						-- check if lookup returned the right registration
+						if searchRegistration == foundRegistration then
+							-- yes, isolate metadata
+							foundAirline = trim(extractMetadata(content, '/airline/', '"'))
+							foundAircraft = trim(extractMetadata(content, '/aircraft/', '"'))
+							-- split aircraft info in manufacturer and type
+							foundAircraftManufacturer = trim(extractMetadata(content, 'manu=', '"'))
+							-- check if manufacturer is set
+							if foundAircraftManufacturer == '' then
+								foundAircraftManufacturer = 'not set'
+							end
+							foundAircraftType = trim(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
+							-- cache found metadata
+							metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType}
+							logger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
+						else
+							-- no, lookup returned wrong registration
+							logger:info(photoFilename..' -  lookup returned wrong registration: >>'..foundRegistration..'<< instead of >>'..searchRegistration..'<<')
+							countNoReg = countNoReg + 1
+							-- mark photo with keyword wrong_reg
+						end
 					end
+				else
+					-- yes, use cached metadata
+					logger:info(photoFilename..' - using cached metadata for: '..metadataCache[searchRegistration].foundRegistration)
+					countCacheHit = countCacheHit + 1
+				end
+				if flagRegFound then
+					-- write metadata to image
+					catalog:withWriteAccessDo( 'set aircraft metadata',
+					function()
+						photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
+						photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
+						photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
+						photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
+					end)
 				end
 			else
-				-- yes, use cached metadata
-				logger:info(photoFilename..' - using cached metadata for: '..metadataCache[searchRegistration].foundRegistration)
-				countCacheHit = countCacheHit + 1
+				-- photo has no registration
+				logger:info(photoFilename..' - no registration set')
+				countNoReg = countNoReg + 1
+				-- mark photo with keyword no_reg
 			end
-			if flagRegFound then
-				-- write metadata to image
-				catalog:withWriteAccessDo( 'set aircraft metadata',
-				function()
-					photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
-					photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
-					photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
-					photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
-				end)
-			end
-		else
-			-- photo has no registration
-			logger:info(photoFilename..' - no registration set')
-			countNoReg = countNoReg + 1
-			-- mark photo with keyword no_reg
+			progressScope:setPortionComplete(countProcessed, countSelected)
 		end
-		progressScope:setPortionComplete(countProcessed, countSelected)
+		logger:info('processed '..countProcessed..' photos ('..countLookup..' web lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' without reg)')
+		progressScope:done()
+		LrDialogs.showBezel('Aircraft Metadata Lookup finished')
 	end
-	logger:info('>>>> lookup done - processed '..countProcessed..' photos ('..countLookup..' lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' photos without reg)')
-	LrDialogs.message('Lookup done', 'processed '..countProcessed..' photos ('..countLookup..' lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' photos without reg)', 'info')
-	progressScope:done()
+	logger:info('>>>> lookup done')
 end
 
 -- isolate metadata - sorry, creepy html parsing, no fancy things like JSON available
@@ -159,6 +167,17 @@ end
 -- remove trailing and leading whitespace from string
 function trim(s)
   return (s:gsub('^%s*(.-)%s*$', '%1'))
+end
+
+-- clear old logfile
+function clearLogfile()
+	local logPath = LrPathUtils.child(LrPathUtils.getStandardFilePath('documents'), 'AircraftMetadatLookup.log')
+		if LrFileUtils.exists( logPath ) then
+			success, reason = LrFileUtils.delete( logPath )
+			if not success then
+				logger:error('error deleting existing logfile!'..reason)
+			end
+	end
 end
 
 import 'LrTasks'.startAsyncTask(AircraftMetadataImport.Jetphotos)
