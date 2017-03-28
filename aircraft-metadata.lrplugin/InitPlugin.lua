@@ -16,7 +16,21 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
-local LrPrefs = import 'LrPrefs'.prefsForPlugin()
+local prefs = import 'LrPrefs'.prefsForPlugin()
 
-LrPrefs.prefLookupUrl = 'https://www.jetphotos.com/showphotos.php?regsearch='
-LrPrefs.flagLogging = false
+if prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '' then
+	prefs.prefLookupUrl = 'https://www.jetphotos.com/showphotos.php?regsearch='
+end
+
+if prefs.prefFlagLogging == nil then
+	prefs.prefFlagLogging = false
+end
+
+prefs.prefRegistrationToken1 = '/registration/'
+prefs.prefRegistrationToken2 = '"'
+prefs.prefAirlineToken1 = '/airline/'
+prefs.prefAirlineToken2 = '"'
+prefs.prefAircraftToken1 = '/aircraft/'
+prefs.prefAircraftToken2 = '"'
+prefs.prefManufacturerToken1 = '/aircraft/'
+prefs.prefManufacturerToken2 = 'manu='

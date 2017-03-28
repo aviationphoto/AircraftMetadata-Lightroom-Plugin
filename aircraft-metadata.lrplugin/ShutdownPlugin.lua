@@ -16,7 +16,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
-local LrPrefs = import 'LrPrefs'.prefsForPlugin()
+local prefs = import 'LrPrefs'.prefsForPlugin()
 
-LrPrefs.prefLookupUrl = nil
-LrPrefs.flagLogging = nil
+prefs.prefLookupUrl = nil
+prefs.prefFlagLogging = nil
+
+prefs.prefRegistrationToken1 = nil
+prefs.prefRegistrationToken2 = nil
+prefs.prefAirlineToken1 = nil
+prefs.prefAirlineToken2 = nil
+prefs.prefAircraftToken1 = nil
+prefs.prefAircraftToken2 = nil
+prefs.prefManufacturerToken1 = nil
+prefs.prefManufacturerToken2 = nil

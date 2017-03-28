@@ -32,7 +32,7 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 			viewFactory:row {
 				viewFactory:checkbox {
 					title = 'Enable logging to ',
-					value = bind {key = 'flagLogging', object = LrPrefs},
+					value = bind {key = 'prefFlagLogging', object = LrPrefs},
 				},
 				viewFactory:static_text {
 					title = logPath,
