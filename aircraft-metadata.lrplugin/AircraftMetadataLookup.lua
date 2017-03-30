@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 local LrApplication = import 'LrApplication'
+local LrFunctionContext = import 'LrFunctionContext'
 local LrDialogs = import 'LrDialogs'
 local LrFileUtils = import 'LrFileUtils'
 local LrPathUtils = import 'LrPathUtils'
@@ -162,12 +163,20 @@ end
 -- isolate metadata - sorry, creepy html parsing, no fancy things like JSON available
 function extractMetadata(payload, Token1, Token2)
 	local posStart, posEnd = string.find(payload, Token1)
-	local line = string.sub(payload, posEnd + 1)
-	--LrDialogs.message('Lookup Airline - after Token 1', line, 'info')
-	posStart, posEnd = string.find(line, Token2)
-	line = string.sub(line, 1, posStart - 1)
-	--LrDialogs.message('Lookup Airline - after Token 2', line, 'info')
-	return line
+	if posEnd == nil then
+		LrErrors.throwUserError('Token "'..Token1..'" not found.')
+	else
+		local line = string.sub(payload, posEnd + 1)
+		--LrDialogs.message('Lookup Airline - after Token 1', line, 'info')
+		posStart, posEnd = string.find(line, Token2)
+		if posStart == nil then
+			LrErrors.throwUserError('Token "'..Token2..'" not found.')
+		else
+			line = string.sub(line, 1, posStart - 1)
+			--LrDialogs.message('Lookup Airline - after Token 2', line, 'info')
+			return line
+		end
+	end
 end
 
 -- remove trailing and leading whitespace from string
