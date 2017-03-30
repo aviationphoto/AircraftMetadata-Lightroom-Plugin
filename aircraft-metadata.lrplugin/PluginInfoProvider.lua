@@ -29,6 +29,7 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 	return {
 		{
 			title = 'Settings',
+			-- logging
 			viewFactory:row {
 				viewFactory:checkbox {
 					title = 'Enable logging to ',
@@ -38,6 +39,7 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 					title = logPath,
 				},
 			},
+			-- lookup url
 			viewFactory:row {
 				viewFactory:static_text {
 					title = 'URL for lookup',
@@ -45,6 +47,67 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 				viewFactory:edit_field {
 					value = bind {key = 'prefLookupUrl', object = LrPrefs},
 					width_in_chars = 40,
+					wraps = false,
+				},
+			},
+			-- tokens
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Registration',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefRegistrationToken1', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefRegistrationToken2', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+			},
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Airline',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefAirlineToken1', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefAirlineToken2', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+			},
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Aircraft',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefAircraftToken1', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefAircraftToken2', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+			},
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Manufacturer',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefManufacturerToken1', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefManufacturerToken2', object = LrPrefs},
+					width_in_chars = 20,
 					wraps = false,
 				},
 			},
