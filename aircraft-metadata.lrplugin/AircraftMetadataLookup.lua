@@ -46,6 +46,7 @@ function AircraftMetadataImport.Jetphotos()
 	-- check if logging enabled
 	if prefs.prefFlagLogging then
 		logger:enable('logfile')
+		clearLogfile()
 	else
 		logger:disable()
 	end
@@ -91,7 +92,7 @@ function AircraftMetadataImport.Jetphotos()
 				if not metadataCache[searchRegistration] then
 					-- no, we need to do a lookup
 					countLookup = countLookup + 1
-					lookupURL = baseURL..searchRegistration
+					lookupURL = prefs.prefLookupUrl..searchRegistration
 					logger:info(photoFilename..' - looking up registration at '..lookupURL..' for: >>'..searchRegistration..'<<')
 					-- do the lookup
 					content = LrHttp.get(lookupURL)
@@ -105,14 +106,14 @@ function AircraftMetadataImport.Jetphotos()
 						-- mark photo with keyword reg_not_found
 					else
 						-- lookup returned something usefull
-						foundRegistration = trim(extractMetadata(content, '/registration/', '"'))
+						foundRegistration = trim(extractMetadata(content, prefs.prefRegistrationToken1, prefs.prefRegistrationToken2))
 						-- check if lookup returned the right registration
 						if searchRegistration == foundRegistration then
 							-- yes, isolate metadata
-							foundAirline = trim(extractMetadata(content, '/airline/', '"'))
-							foundAircraft = trim(extractMetadata(content, '/aircraft/', '"'))
+							foundAirline = trim(extractMetadata(content, prefs.prefAirlineToken1, prefs.prefAirlineToken2))
+							foundAircraft = trim(extractMetadata(content, prefs.prefAircraftToken1, prefs.prefAircraftToken2))
 							-- split aircraft info in manufacturer and type
-							foundAircraftManufacturer = trim(extractMetadata(content, 'manu=', '"'))
+							foundAircraftManufacturer = trim(extractMetadata(content, prefs.prefManufacturerToken1, prefs.prefManufacturerToken2))
 							-- check if manufacturer is set
 							if foundAircraftManufacturer == '' then
 								foundAircraftManufacturer = 'not set'
@@ -188,10 +189,40 @@ end
 -- load saved preferences
 function loadPrefs()
 	-- lookup URL
-	if not (prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '') then
-		baseURL = prefs.prefLookupUrl
-	else
+	if (prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '') then
 		LrErrors.throwUserError('Please set URL for lookup')
+	end
+	-- lookup RegistrationToken1
+	if (prefs.prefRegistrationToken1 == nil or prefs.prefRegistrationToken1 == '') then
+		LrErrors.throwUserError('Please set registration token 1')
+	end
+	-- lookup RegistrationToken2
+	if (prefs.prefRegistrationToken2 == nil or prefs.prefRegistrationToken2 == '') then
+		LrErrors.throwUserError('Please set registration token 2')
+	end
+	-- lookup AirlineToken1
+	if (prefs.prefAirlineToken1 == nil or prefs.prefAirlineToken1 == '') then
+		LrErrors.throwUserError('Please set airline token 1')
+	end
+	-- lookup AirlineToken2
+	if (prefs.prefAirlineToken2 == nil or prefs.prefAirlineToken2 == '') then
+		LrErrors.throwUserError('Please set airline token 2')
+	end
+	-- lookup AircraftToken1
+	if (prefs.prefAircraftToken1 == nil or prefs.prefAircraftToken1 == '') then
+		LrErrors.throwUserError('Please set aircraft token 1')
+	end
+	-- lookup AircraftToken2
+	if (prefs.prefAircraftToken2 == nil or prefs.prefAircraftToken2 == '') then
+		LrErrors.throwUserError('Please set aircraft token 2')
+	end
+	-- lookup ManufacturerToken1
+	if (prefs.prefManufacturerToken1 == nil or prefs.prefManufacturerToken1 == '') then
+		LrErrors.throwUserError('Please set manufacturer token 1')
+	end
+	-- lookup ManufacturerToken2
+	if (prefs.prefManufacturerToken2 == nil or prefs.prefManufacturerToken2 == '') then
+		LrErrors.throwUserError('Please set manufacturer token 2')
 	end
 end
 
