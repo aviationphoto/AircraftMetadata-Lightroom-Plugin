@@ -23,12 +23,27 @@ end
 if prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '' then
 	prefs.prefLookupUrl = 'https://www.jetphotos.com/showphotos.php?regsearch='
 end
-
-prefs.prefRegistrationToken1 = '/registration/'
-prefs.prefRegistrationToken2 = '"'
-prefs.prefAirlineToken1 = '/airline/'
-prefs.prefAirlineToken2 = '"'
-prefs.prefAircraftToken1 = '/aircraft/'
-prefs.prefAircraftToken2 = '"'
-prefs.prefManufacturerToken1 = 'manu='
-prefs.prefManufacturerToken2 = '"'
+if prefs.prefRegistrationToken1 == nil or prefs.prefRegistrationToken1 == '' then
+	prefs.prefRegistrationToken1 = '/registration/'
+end
+if prefs.prefRegistrationToken2 == nil or prefs.prefRegistrationToken2 == '' then
+	prefs.prefRegistrationToken2 = '"'
+end
+if prefs.prefAirlineToken1 == nil or prefs.prefAirlineToken1 == '' then
+	prefs.prefAirlineToken1 = '/airline/'
+end
+if prefs.prefAirlineToken2 == nil or prefs.prefAirlineToken2 == '' then
+	prefs.prefAirlineToken2 = '"'
+end
+if prefs.prefAircraftToken1 == nil or prefs.prefAircraftToken1 == '' then
+	prefs.prefAircraftToken1 = '/aircraft/'
+end
+if prefs.prefAircraftToken2 == nil or prefs.prefAircraftToken2 == '' then
+	prefs.prefAircraftToken2 = '"'
+end
+if prefs.prefManufacturerToken1 == nil or prefs.prefManufacturerToken1 == '' then
+	prefs.prefManufacturerToken1 = 'manu='
+end
+if prefs.prefManufacturerToken2 == nil or prefs.prefManufacturerToken2 == '' then
+	prefs.prefManufacturerToken2 = '"'
+end
