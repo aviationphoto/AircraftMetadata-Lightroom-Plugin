@@ -18,7 +18,7 @@ along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 return {
 	LrSdkVersion = 5.0,
-	VERSION = {major=1, minor=1, revision=1,},
+	VERSION = {major=1, minor=1, revision=2,},
 
 	LrPluginName = 'Aircraft Metadata',
 	LrToolkitIdentifier = 'ch.aviationphoto.aircraftmetadata',
@@ -27,7 +27,7 @@ return {
 	LrMetadataTagsetFactory = 'MetadataTagset.lua',
 	LrPluginInfoProvider = 'PluginInfoProvider.lua',
 	LrInitPlugin  = 'InitPlugin.lua',
-	LrShutdownPlugin = 'ShutdownPlugin.lua',
+	--LrShutdownPlugin = 'ShutdownPlugin.lua',
 
 	LrPluginInfoUrl = 'https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin',
 

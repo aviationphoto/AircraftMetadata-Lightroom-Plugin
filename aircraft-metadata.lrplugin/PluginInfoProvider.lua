@@ -29,15 +29,43 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 	return {
 		{
 			title = 'Settings',
+			-- logging
 			viewFactory:row {
 				viewFactory:checkbox {
 					title = 'Enable logging to ',
-					value = bind {key = 'flagLogging', object = LrPrefs},
+					value = bind {key = 'prefFlagLogging', object = LrPrefs},
 				},
 				viewFactory:static_text {
 					title = logPath,
 				},
 			},
+			-- overwrite
+			viewFactory:row {
+				viewFactory:checkbox {
+					title = 'Overwrite existing metadata ',
+					value = bind {key = 'prefFlagOverwrite', object = LrPrefs},
+				},
+			},
+			viewFactory:row {
+				viewFactory:separator {
+					fill_horizontal = 1},
+			},
+			-- tag reg not found
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Keyword if registration not found',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefKeywordRegNotFound', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+			},
+			viewFactory:row {
+				viewFactory:separator {
+					fill_horizontal = 1},
+			},
+			-- lookup url
 			viewFactory:row {
 				viewFactory:static_text {
 					title = 'URL for lookup',
@@ -45,6 +73,67 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 				viewFactory:edit_field {
 					value = bind {key = 'prefLookupUrl', object = LrPrefs},
 					width_in_chars = 40,
+					wraps = false,
+				},
+			},
+			-- tokens
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Registration',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefRegistrationToken1', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefRegistrationToken2', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+			},
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Airline',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefAirlineToken1', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefAirlineToken2', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+			},
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Aircraft',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefAircraftToken1', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefAircraftToken2', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+			},
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Manufacturer',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefManufacturerToken1', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefManufacturerToken2', object = LrPrefs},
+					width_in_chars = 20,
 					wraps = false,
 				},
 			},
