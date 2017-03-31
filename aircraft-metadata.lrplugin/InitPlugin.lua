@@ -23,8 +23,8 @@ end
 if prefs.prefFlagOverwrite == nil then
 	prefs.prefFlagOverwrite = false
 end
-if prefs.prefTagRegNotFound == nil or prefs.prefTagRegNotFound == '' then
-	prefs.prefTagRegNotFound = 'RegNotFound'
+if prefs.prefKeywordRegNotFound == nil or prefs.prefKeywordRegNotFound == '' then
+	prefs.prefKeywordRegNotFound = 'RegNotFound'
 end
 if prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '' then
 	prefs.prefLookupUrl = 'https://www.jetphotos.com/showphotos.php?regsearch='

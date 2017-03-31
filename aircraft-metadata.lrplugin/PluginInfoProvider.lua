@@ -53,10 +53,10 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 			-- tag reg not found
 			viewFactory:row {
 				viewFactory:static_text {
-					title = 'Tag if registration not found',
+					title = 'Keyword if registration not found',
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefTagRegNotFound', object = LrPrefs},
+					value = bind {key = 'prefKeywordRegNotFound', object = LrPrefs},
 					width_in_chars = 20,
 					wraps = false,
 				},
