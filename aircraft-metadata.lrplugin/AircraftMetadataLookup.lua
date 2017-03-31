@@ -162,13 +162,33 @@ function AircraftMetadataImport()
 						end
 						-- check if we have a reg and user did not hit cancel
 						if flagRegFound and not progressScope:isCanceled()then
-							-- write metadata to image
+							-- write metadata to photo
 							catalog:withWriteAccessDo('set aircraft metadata',
 							function()
-								photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
-								photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
-								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
-								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
+								-- check if user allows overwrite of existing airline metadata
+								if photo:getPropertyForPlugin(_PLUGIN, 'airline') == nil then
+									photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
+								else
+									if prefs.prefFlagOverwrite then
+										photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
+									end
+								end
+								-- check if user allows overwrite of existing manufacturer metadata
+								if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer') == nil then
+									photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
+								else
+									if prefs.prefFlagOverwrite then
+										photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
+									end
+								end
+								-- check if user allows overwrite of existing type metadata
+								if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_type') == nil then
+									photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
+								else
+									if prefs.prefFlagOverwrite then
+										photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
+									end
+								end
 								-- remove reg_not_found if set
 								photo:removeKeyword(keyword)
 							end)
@@ -189,6 +209,8 @@ function AircraftMetadataImport()
 		logger:info('>>>> lookup done')
 	end)
 end
+
+
 
 -- isolate metadata - sorry, creepy html parsing, no fancy things like JSON available
 function extractMetadata(payload, Token1, Token2)
