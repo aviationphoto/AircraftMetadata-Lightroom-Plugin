@@ -69,6 +69,11 @@ function AircraftMetadataImport()
 		-- get a reference to the photos within the current catalog
 		local catalog = LrApplication.activeCatalog()
 		local selectedPhotos = catalog:getTargetPhotos()
+		-- create / get keyword
+		catalog:withWriteAccessDo('set keyword',
+		function()
+			keyword = catalog:createKeyword(prefs.prefKeywordRegNotFound, {}, false, nil, true)
+		end)
 
 		-- check if user selected at least one photos
 		if catalog:getTargetPhoto() == nil then
@@ -121,6 +126,10 @@ function AircraftMetadataImport()
 								flagRegFound = false
 								logger:info(photoFilename..' - no metadata found for registration >>'..searchRegistration..'<<')
 								-- mark photo with keyword reg_not_found
+								catalog:withWriteAccessDo('set keyword',
+								function()
+									photo:addKeyword(keyword)
+								end)
 							else
 								-- lookup returned something usefull
 								foundRegistration = trim(extractMetadata(content, prefs.prefRegistrationToken1, prefs.prefRegistrationToken2))
@@ -154,7 +163,7 @@ function AircraftMetadataImport()
 						-- check if we have a reg and user did not hit cancel
 						if flagRegFound and not progressScope:isCanceled()then
 							-- write metadata to image
-							catalog:withWriteAccessDo( 'set aircraft metadata',
+							catalog:withWriteAccessDo('set aircraft metadata',
 							function()
 								photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
 								photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
@@ -166,7 +175,6 @@ function AircraftMetadataImport()
 						-- photo has no registration
 						logger:info(photoFilename..' - no registration set')
 						countNoReg = countNoReg + 1
-						-- mark photo with keyword no_reg
 					end
 					-- update progress bar
 					progressScope:setPortionComplete(countProcessed, countSelected)
@@ -217,6 +225,10 @@ end
 
 -- load saved preferences
 function loadPrefs()
+	-- lookup KeywordRegNotFound
+	if (prefs.prefKeywordRegNotFound == nil or prefs.prefKeywordRegNotFound == '') then
+		LrErrors.throwUserError('Please set KeywordRegNotFound')
+	end
 	-- lookup URL
 	if (prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '') then
 		LrErrors.throwUserError('Please set URL for lookup')
