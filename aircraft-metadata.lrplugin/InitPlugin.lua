@@ -20,6 +20,12 @@ local prefs = import 'LrPrefs'.prefsForPlugin()
 if prefs.prefFlagLogging == nil then
 	prefs.prefFlagLogging = false
 end
+if prefs.prefFlagOverwrite == nil then
+	prefs.prefFlagOverwrite = false
+end
+if prefs.prefTagRegNotFound == nil or prefs.prefTagRegNotFound == '' then
+	prefs.prefTagRegNotFound = 'RegNotFound'
+end
 if prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '' then
 	prefs.prefLookupUrl = 'https://www.jetphotos.com/showphotos.php?regsearch='
 end

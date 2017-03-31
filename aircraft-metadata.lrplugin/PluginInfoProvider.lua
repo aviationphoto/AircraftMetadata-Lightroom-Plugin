@@ -39,6 +39,32 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 					title = logPath,
 				},
 			},
+			-- overwrite
+			viewFactory:row {
+				viewFactory:checkbox {
+					title = 'Overwrite existing metadata ',
+					value = bind {key = 'prefFlagOverwrite', object = LrPrefs},
+				},
+			},
+			viewFactory:row {
+				viewFactory:separator {
+					fill_horizontal = 1},
+			},
+			-- tag reg not found
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Tag if registration not found',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefTagRegNotFound', object = LrPrefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+			},
+			viewFactory:row {
+				viewFactory:separator {
+					fill_horizontal = 1},
+			},
 			-- lookup url
 			viewFactory:row {
 				viewFactory:static_text {
