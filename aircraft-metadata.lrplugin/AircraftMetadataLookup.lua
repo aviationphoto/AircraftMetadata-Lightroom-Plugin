@@ -50,6 +50,7 @@ function AircraftMetadataImport()
 		local countLookup = 0
 		local countNoReg = 0
 		local countRegNotFound = 0
+		local messageEnd = 'Aircraft Metadata Lookup finished'
 
 		local flagRegFound = true
 		local flagRun = true
@@ -90,7 +91,9 @@ function AircraftMetadataImport()
 				countProcessed = countProcessed + 1
 				flagRegFound = true
 				-- check if user hit cancel in progress bar
-				if not progressScope:isCanceled() then
+				if progressScope:isCanceled() then
+					messageEnd = 'Aircraft Metadata Lookup canceled'
+				else
 					-- read photo name
 					local photoFilename = photo:getFormattedMetadata('fileName')
 					-- read aircraft registration from photo
@@ -168,7 +171,7 @@ function AircraftMetadataImport()
 			end
 			logger:info('processed '..countProcessed..' photos ('..countLookup..' web lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' without reg)')
 			progressScope:done()
-			LrDialogs.showBezel('Aircraft Metadata Lookup finished')
+			LrDialogs.showBezel(messageEnd)
 		end
 		logger:info('>>>> lookup done')
 	end)
