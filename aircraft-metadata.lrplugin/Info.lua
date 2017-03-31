@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 return {
-	LrSdkVersion = 5.0,
+	LrSdkVersion = 6.0,
 	VERSION = {major=1, minor=2, revision=0,},
 
 	LrPluginName = 'Aircraft Metadata',
