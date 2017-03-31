@@ -169,6 +169,8 @@ function AircraftMetadataImport()
 								photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
 								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
 								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
+								-- remove reg_not_found if set
+								photo:removeKeyword(keyword)
 							end)
 						end
 					else
