@@ -74,7 +74,10 @@ function AircraftMetadataImport()
 		if catalog:getTargetPhoto() == nil then
 			local dialogAction = LrDialogs.confirm('Aircraft Metadata Lookup', 'No photo selected - run lookup on all photos in filmstrip?', 'Yes', 'No')
 			if dialogAction == 'cancel' then
+				-- cleanup if canceled by user
 				flagRun = false
+				progressScope:done()
+				messageEnd = 'Aircraft Metadata Lookup canceled'
 				logger:info('no active photo selection - user canceled run on entire filmstrip')
 			end
 		end
@@ -171,8 +174,8 @@ function AircraftMetadataImport()
 			end
 			logger:info('processed '..countProcessed..' photos ('..countLookup..' web lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' without reg)')
 			progressScope:done()
-			LrDialogs.showBezel(messageEnd)
 		end
+		LrDialogs.showBezel(messageEnd)
 		logger:info('>>>> lookup done')
 	end)
 end
