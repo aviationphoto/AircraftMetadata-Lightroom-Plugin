@@ -105,7 +105,7 @@ function AircraftMetadataImport()
 					-- read photo name
 					local photoFilename = photo:getFormattedMetadata('fileName')
 					-- read aircraft registration from photo
-					searchRegistration = photo:getPropertyForPlugin(_PLUGIN, 'registration')
+					searchRegistration = string.upper(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
 					-- do we have a registration?
 					if not (searchRegistration == '' or searchRegistration == nil) then
 						-- yes, photo has registration
@@ -165,6 +165,14 @@ function AircraftMetadataImport()
 							-- write metadata to photo
 							catalog:withWriteAccessDo('set aircraft metadata',
 							function()
+								-- check if user allows overwrite of existing registration metadata
+								if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
+									photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
+								else
+									if prefs.prefFlagOverwrite then
+										photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
+									end
+								end
 								-- check if user allows overwrite of existing airline metadata
 								if photo:getPropertyForPlugin(_PLUGIN, 'airline') == nil then
 									photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
