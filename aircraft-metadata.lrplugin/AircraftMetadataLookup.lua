@@ -102,8 +102,13 @@ function AircraftMetadataImport()
 				if progressScope:isCanceled() then
 					messageEnd = 'Aircraft Metadata Lookup canceled'
 				else
-					-- read photo name
-					photoFilename = photo:getFormattedMetadata('fileName')
+					-- read photo name for logging
+					-- check if we are working on a copy
+					if photo:getFormattedMetadata('copyName') == nil then
+						photoFilename = photo:getFormattedMetadata('fileName')
+					else
+						photoFilename = photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
+					end
 					-- read aircraft registration from photo
 					searchRegistration = photo:getPropertyForPlugin(_PLUGIN, 'registration')
 					-- do we have a registration?

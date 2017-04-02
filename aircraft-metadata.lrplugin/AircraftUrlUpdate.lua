@@ -88,8 +88,13 @@ function AircraftUrlUpdate()
 			logger:info('performing update on '..countSelected..' selected photos')
 			for _, photo in ipairs (selectedPhotos) do
 				countProcessed = countProcessed + 1
-				-- read photo name
-				photoFilename = photo:getFormattedMetadata('fileName')
+				-- read photo name for logging
+				-- check if we are working on a copy
+				if photo:getFormattedMetadata('copyName') == nil then
+					photoFilename = photo:getFormattedMetadata('fileName')
+				else
+					photoFilename = photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
+				end
 				-- check if a registration is set
 				if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
 					-- photo has no url
