@@ -30,6 +30,8 @@ return {
 		'ch.aviationphoto.aircraftmetadata.aircraft_type',
 		'ch.aviationphoto.aircraftmetadata.aircraft_notes',
 		'com.adobe.separator',
+		'ch.aviationphoto.aircraftmetadata.airport_iata',
+		'com.adobe.separator',
 		'ch.aviationphoto.aircraftmetadata.flight',
 		'ch.aviationphoto.aircraftmetadata.flight_from',
 		'ch.aviationphoto.aircraftmetadata.flight_to',
