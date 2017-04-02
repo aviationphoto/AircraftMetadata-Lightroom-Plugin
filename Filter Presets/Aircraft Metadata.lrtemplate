@@ -10,13 +10,16 @@ s = {
 				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.airline",
 			},
 			{
-				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.registration",
-			},
-			{
 				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.aircraft_manufacturer",
 			},
 			{
 				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.aircraft_type",
+			},
+			{
+				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.registration",
+			},
+			{
+				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.airport_iata",
 			},
 			{
 				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.aircraft_notes",
