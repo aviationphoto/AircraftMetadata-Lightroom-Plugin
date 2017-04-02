@@ -20,43 +20,69 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 	local LrView = import 'LrView'
 	local LrBinding = import 'LrBinding'
 	local bind = LrView.bind
-	local LrPrefs = import 'LrPrefs'.prefsForPlugin()
+	local prefs = import 'LrPrefs'.prefsForPlugin()
 
 	local LrFileUtils = import 'LrFileUtils'
 	local LrPathUtils = import 'LrPathUtils'
 	local logPath = LrPathUtils.child(LrPathUtils.getStandardFilePath('documents'), 'AircraftMetadatLookup.log')
 
+	-- set text for section synopsis
+	if prefs.prefFlagLogging == true then
+		synopsisLog = 'logging enabled'
+	else
+		synopsisLog = 'logging disabled'
+	end
+
+	if prefs.prefFlagOverwrite == true then
+		synopsisOverwrite = 'overwrite existing metadata'
+	else
+		synopsisOverwrite = 'logging disabled'
+	end
+
+
+
 	return {
+		-- section log settings
 		{
-			title = 'Settings',
+			title = 'Log Settings',
+			synopsis = synopsisLog,
 			-- logging
 			viewFactory:row {
 				viewFactory:checkbox {
 					title = 'Enable logging to ',
-					value = bind {key = 'prefFlagLogging', object = LrPrefs},
+					value = bind {key = 'prefFlagLogging', object = prefs},
 				},
 				viewFactory:static_text {
 					title = logPath,
 				},
 			},
+		},
+		-- section overwrite settings
+		{
+			title = 'Overwrite Settings',
+			synopsis = synopsisOverwrite,
 			-- overwrite
 			viewFactory:row {
 				viewFactory:checkbox {
 					title = 'Overwrite existing metadata ',
-					value = bind {key = 'prefFlagOverwrite', object = LrPrefs},
+					value = bind {key = 'prefFlagOverwrite', object = prefs},
 				},
 			},
 			viewFactory:row {
 				viewFactory:separator {
 					fill_horizontal = 1},
 			},
+		},
+		-- section tagging settings
+		{
+			title = 'Tagging',
 			-- tag reg not found
 			viewFactory:row {
 				viewFactory:static_text {
 					title = 'Keyword if registration not found',
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefKeywordRegNotFound', object = LrPrefs},
+					value = bind {key = 'prefKeywordRegNotFound', object = prefs},
 					width_in_chars = 20,
 					wraps = false,
 				},
@@ -65,13 +91,18 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 				viewFactory:separator {
 					fill_horizontal = 1},
 			},
+		},
+		-- section lookup settings
+		{
+			title = 'Lookup source',
+			synopsis = prefs.prefLookupUrl,
 			-- lookup url
 			viewFactory:row {
 				viewFactory:static_text {
 					title = 'URL for lookup',
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefLookupUrl', object = LrPrefs},
+					value = bind {key = 'prefLookupUrl', object = prefs},
 					width_in_chars = 40,
 					wraps = false,
 				},
@@ -82,12 +113,12 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 					title = 'Registration',
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefRegistrationToken1', object = LrPrefs},
+					value = bind {key = 'prefRegistrationToken1', object = prefs},
 					width_in_chars = 20,
 					wraps = false,
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefRegistrationToken2', object = LrPrefs},
+					value = bind {key = 'prefRegistrationToken2', object = prefs},
 					width_in_chars = 20,
 					wraps = false,
 				},
@@ -97,12 +128,12 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 					title = 'Airline',
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefAirlineToken1', object = LrPrefs},
+					value = bind {key = 'prefAirlineToken1', object = prefs},
 					width_in_chars = 20,
 					wraps = false,
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefAirlineToken2', object = LrPrefs},
+					value = bind {key = 'prefAirlineToken2', object = prefs},
 					width_in_chars = 20,
 					wraps = false,
 				},
@@ -112,12 +143,12 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 					title = 'Aircraft',
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefAircraftToken1', object = LrPrefs},
+					value = bind {key = 'prefAircraftToken1', object = prefs},
 					width_in_chars = 20,
 					wraps = false,
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefAircraftToken2', object = LrPrefs},
+					value = bind {key = 'prefAircraftToken2', object = prefs},
 					width_in_chars = 20,
 					wraps = false,
 				},
@@ -127,12 +158,12 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 					title = 'Manufacturer',
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefManufacturerToken1', object = LrPrefs},
+					value = bind {key = 'prefManufacturerToken1', object = prefs},
 					width_in_chars = 20,
 					wraps = false,
 				},
 				viewFactory:edit_field {
-					value = bind {key = 'prefManufacturerToken2', object = LrPrefs},
+					value = bind {key = 'prefManufacturerToken2', object = prefs},
 					width_in_chars = 20,
 					wraps = false,
 				},
