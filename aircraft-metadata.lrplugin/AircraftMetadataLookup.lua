@@ -103,13 +103,13 @@ function AircraftMetadataImport()
 					messageEnd = 'Aircraft Metadata Lookup canceled'
 				else
 					-- read photo name
-					local photoFilename = photo:getFormattedMetadata('fileName')
+					photoFilename = photo:getFormattedMetadata('fileName')
 					-- read aircraft registration from photo
-					searchRegistration = string.upper(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
+					searchRegistration = photo:getPropertyForPlugin(_PLUGIN, 'registration')
 					-- do we have a registration?
 					if not (searchRegistration == '' or searchRegistration == nil) then
 						-- yes, photo has registration
-						local searchRegistration = trim(searchRegistration)
+						searchRegistration = string.upper(trim(searchRegistration))
 						-- is registration already in cache?
 						if not metadataCache[searchRegistration] then
 							-- no, we need to do a lookup
@@ -146,7 +146,7 @@ function AircraftMetadataImport()
 									end
 									foundAircraftType = trim(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
 									-- cache found metadata
-									metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType}
+									metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType, lookupURL = lookupURL}
 									logger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
 								else
 									-- no, lookup returned wrong registration
@@ -197,6 +197,8 @@ function AircraftMetadataImport()
 										photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
 									end
 								end
+								-- set aircraft url - we overwrite this in any case
+								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', metadataCache[searchRegistration].lookupURL)
 								-- remove reg_not_found if set
 								photo:removeKeyword(keyword)
 							end)
