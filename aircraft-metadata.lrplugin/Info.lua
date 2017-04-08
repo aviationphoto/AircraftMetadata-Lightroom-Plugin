@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 return {
-	LrSdkVersion = 5.0,
-	VERSION = {major=1, minor=1, revision=2,},
+	LrSdkVersion = 6.0,
+	VERSION = {major=1, minor=2, revision=0,},
 
 	LrPluginName = 'Aircraft Metadata',
 	LrToolkitIdentifier = 'ch.aviationphoto.aircraftmetadata',
@@ -37,12 +37,20 @@ return {
 			title = 'Lookup Aircraft Metadata',
 			file = 'AircraftMetadataLookup.lua',
 		},
+		{
+			title = 'Update Aircraft URL',
+			file = 'AircraftUrlUpdate.lua',
+		},
 	},
 	--show in library menu
 	LrLibraryMenuItems = {
 		{
 			title = 'Lookup Aircraft Metadata',
 			file = 'AircraftMetadataLookup.lua',
+		},
+		{
+			title = 'Update Aircraft URL',
+			file = 'AircraftUrlUpdate.lua',
 		},
 	},
 

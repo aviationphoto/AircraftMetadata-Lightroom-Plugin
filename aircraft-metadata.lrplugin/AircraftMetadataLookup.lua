@@ -102,14 +102,19 @@ function AircraftMetadataImport()
 				if progressScope:isCanceled() then
 					messageEnd = 'Aircraft Metadata Lookup canceled'
 				else
-					-- read photo name
-					local photoFilename = photo:getFormattedMetadata('fileName')
+					-- read photo name for logging
+					-- check if we are working on a copy
+					if photo:getFormattedMetadata('copyName') == nil then
+						photoFilename = photo:getFormattedMetadata('fileName')
+					else
+						photoFilename = photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
+					end
 					-- read aircraft registration from photo
 					searchRegistration = photo:getPropertyForPlugin(_PLUGIN, 'registration')
 					-- do we have a registration?
 					if not (searchRegistration == '' or searchRegistration == nil) then
 						-- yes, photo has registration
-						local searchRegistration = trim(searchRegistration)
+						searchRegistration = string.upper(trim(searchRegistration))
 						-- is registration already in cache?
 						if not metadataCache[searchRegistration] then
 							-- no, we need to do a lookup
@@ -146,7 +151,7 @@ function AircraftMetadataImport()
 									end
 									foundAircraftType = trim(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
 									-- cache found metadata
-									metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType}
+									metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType, lookupURL = lookupURL}
 									logger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
 								else
 									-- no, lookup returned wrong registration
@@ -165,6 +170,14 @@ function AircraftMetadataImport()
 							-- write metadata to photo
 							catalog:withWriteAccessDo('set aircraft metadata',
 							function()
+								-- check if user allows overwrite of existing registration metadata
+								if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
+									photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
+								else
+									if prefs.prefFlagOverwrite then
+										photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
+									end
+								end
 								-- check if user allows overwrite of existing airline metadata
 								if photo:getPropertyForPlugin(_PLUGIN, 'airline') == nil then
 									photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
@@ -189,6 +202,8 @@ function AircraftMetadataImport()
 										photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
 									end
 								end
+								-- set aircraft url - we overwrite this in any case
+								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', metadataCache[searchRegistration].lookupURL)
 								-- remove reg_not_found if set
 								photo:removeKeyword(keyword)
 							end)

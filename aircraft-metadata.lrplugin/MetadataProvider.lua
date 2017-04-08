@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 return {
-	schemaVersion = 6,
+	schemaVersion = 15,
 
 	metadataFieldsForPhotos = {
 		{dataType='string', searchable=true, browsable=true, id='registration', title='Registration'},
@@ -25,6 +25,8 @@ return {
 		{dataType='string', searchable=true, browsable=true, id='aircraft_type', title='Type'},
 		{dataType='string', searchable=true, browsable=true, id='aircraft_notes', title='Notes'},
 		{dataType='string', searchable=true, browsable=true, id='airline', title='Airline'},
+		{dataType='url', searchable=false, browsable=false, readOnly=true, id='aircraft_url', title='Aircraft URL'},
+		{dataType='string', searchable=true, browsable=true, id='airport_iata', title='Airport (IATA)'},
 		--{dataType='string', searchable=true, browsable=true, id='flight', title='Flight'},
 		--{dataType='string', searchable=true, browsable=true, id='flight_from', title='from'},
 		--{dataType='string', searchable=true, browsable=true, id='flight_to', title='to'},
