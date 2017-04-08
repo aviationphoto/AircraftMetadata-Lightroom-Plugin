@@ -16,19 +16,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
-local LrApplication = import 'LrApplication'
-local LrFunctionContext = import 'LrFunctionContext'
-local LrDialogs = import 'LrDialogs'
-local LrFileUtils = import 'LrFileUtils'
-local LrPathUtils = import 'LrPathUtils'
-local LrHttp = import 'LrHttp'
-local LrProgressScope = import 'LrProgressScope'
-local LrErrors = import 'LrErrors'
-local prefs = import 'LrPrefs'.prefsForPlugin()
+require "Utilities"
 
 local AircraftMetadataImport = {}
-
-local logger = import 'LrLogger'('AircraftMetadatLookup')
 
 function AircraftMetadataImport()
 	LrFunctionContext.callWithContext( "Aircraft Metadata Import", function(context)
@@ -65,7 +55,7 @@ function AircraftMetadataImport()
 			logger:disable()
 		end
 
-		logger:info('>>>> running lookup')
+		logger:info('>>>> running AircraftMetadataLookup')
 		-- get a reference to the photos within the current catalog
 		local catalog = LrApplication.activeCatalog()
 		local selectedPhotos = catalog:getTargetPhotos()
@@ -225,8 +215,7 @@ function AircraftMetadataImport()
 	end)
 end
 
-
-
+------- extractMetadata() -----------------------------------------------------
 -- isolate metadata - sorry, creepy html parsing, no fancy things like JSON available
 function extractMetadata(payload, Token1, Token2)
 	local posStart, posEnd = string.find(payload, Token1)
@@ -243,66 +232,6 @@ function extractMetadata(payload, Token1, Token2)
 			--LrDialogs.message('Lookup Airline - after Token 2', line, 'info')
 			return line
 		end
-	end
-end
-
--- remove trailing and leading whitespace from string
-function trim(s)
-  return (s:gsub('^%s*(.-)%s*$', '%1'))
-end
-
--- clear old logfile
-function clearLogfile()
-	local logPath = LrPathUtils.child(LrPathUtils.getStandardFilePath('documents'), 'AircraftMetadatLookup.log')
-		if LrFileUtils.exists( logPath ) then
-			success, reason = LrFileUtils.delete( logPath )
-			if not success then
-				logger:error('error deleting existing logfile!'..reason)
-			end
-	end
-end
-
--- load saved preferences
-function loadPrefs()
-	-- lookup KeywordRegNotFound
-	if (prefs.prefKeywordRegNotFound == nil or prefs.prefKeywordRegNotFound == '') then
-		LrErrors.throwUserError('Please set KeywordRegNotFound')
-	end
-	-- lookup URL
-	if (prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '') then
-		LrErrors.throwUserError('Please set URL for lookup')
-	end
-	-- lookup RegistrationToken1
-	if (prefs.prefRegistrationToken1 == nil or prefs.prefRegistrationToken1 == '') then
-		LrErrors.throwUserError('Please set registration token 1')
-	end
-	-- lookup RegistrationToken2
-	if (prefs.prefRegistrationToken2 == nil or prefs.prefRegistrationToken2 == '') then
-		LrErrors.throwUserError('Please set registration token 2')
-	end
-	-- lookup AirlineToken1
-	if (prefs.prefAirlineToken1 == nil or prefs.prefAirlineToken1 == '') then
-		LrErrors.throwUserError('Please set airline token 1')
-	end
-	-- lookup AirlineToken2
-	if (prefs.prefAirlineToken2 == nil or prefs.prefAirlineToken2 == '') then
-		LrErrors.throwUserError('Please set airline token 2')
-	end
-	-- lookup AircraftToken1
-	if (prefs.prefAircraftToken1 == nil or prefs.prefAircraftToken1 == '') then
-		LrErrors.throwUserError('Please set aircraft token 1')
-	end
-	-- lookup AircraftToken2
-	if (prefs.prefAircraftToken2 == nil or prefs.prefAircraftToken2 == '') then
-		LrErrors.throwUserError('Please set aircraft token 2')
-	end
-	-- lookup ManufacturerToken1
-	if (prefs.prefManufacturerToken1 == nil or prefs.prefManufacturerToken1 == '') then
-		LrErrors.throwUserError('Please set manufacturer token 1')
-	end
-	-- lookup ManufacturerToken2
-	if (prefs.prefManufacturerToken2 == nil or prefs.prefManufacturerToken2 == '') then
-		LrErrors.throwUserError('Please set manufacturer token 2')
 	end
 end
 

@@ -16,18 +16,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
-local LrApplication = import 'LrApplication'
-local LrFunctionContext = import 'LrFunctionContext'
-local LrDialogs = import 'LrDialogs'
-local LrFileUtils = import 'LrFileUtils'
-local LrPathUtils = import 'LrPathUtils'
-local LrProgressScope = import 'LrProgressScope'
-local LrErrors = import 'LrErrors'
-local prefs = import 'LrPrefs'.prefsForPlugin()
+require "Utilities"
 
 local AircraftUrlUpdate = {}
-
-local logger = import 'LrLogger'('AircraftUrlUpdate')
 
 function AircraftUrlUpdate()
 	LrFunctionContext.callWithContext( "Aircraft Metadata Import", function(context)
@@ -54,7 +45,7 @@ function AircraftUrlUpdate()
 			logger:disable()
 		end
 
-		logger:info('>>>> running url update')
+		logger:info('>>>> running AircraftUrlUpdate')
 
 		-- lookup URL
 		if (prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '') then
@@ -127,20 +118,5 @@ function AircraftUrlUpdate()
 	end)
 end
 
--- remove trailing and leading whitespace from string
-function trim(s)
-  return (s:gsub('^%s*(.-)%s*$', '%1'))
-end
-
--- clear old logfile
-function clearLogfile()
-	local logPath = LrPathUtils.child(LrPathUtils.getStandardFilePath('documents'), 'AircraftUrlUpdate.log')
-		if LrFileUtils.exists( logPath ) then
-			success, reason = LrFileUtils.delete( logPath )
-			if not success then
-				logger:error('error deleting existing logfile!'..reason)
-			end
-	end
-end
 
 import 'LrTasks'.startAsyncTask(AircraftUrlUpdate)
