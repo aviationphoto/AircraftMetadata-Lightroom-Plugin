@@ -37,12 +37,20 @@ return {
 			title = 'Lookup Aircraft Metadata',
 			file = 'AircraftMetadataLookup.lua',
 		},
+		{
+			title = 'Update Aircraft URL',
+			file = 'AircraftUrlUpdate.lua',
+		},
 	},
 	--show in library menu
 	LrLibraryMenuItems = {
 		{
 			title = 'Lookup Aircraft Metadata',
 			file = 'AircraftMetadataLookup.lua',
+		},
+		{
+			title = 'Update Aircraft URL',
+			file = 'AircraftUrlUpdate.lua',
 		},
 	},
 
