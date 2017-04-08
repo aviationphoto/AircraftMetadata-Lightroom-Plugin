@@ -29,12 +29,13 @@ function AircraftUrlUpdate()
 		context:addCleanupHandler(function()
 			progressScope:done()
 		end)
-		local messageEnd = 'Aircraft URL Update finished'
 
+		loadPrefs()
+
+		local messageEnd = 'Aircraft URL Update finished'
 		local countSelected = 0
 		local countProcessed = 0
 		local countSkipped = 0
-
 		local flagRun = true
 
 		-- check if logging enabled
@@ -48,11 +49,7 @@ function AircraftUrlUpdate()
 		logger:info('>>>> running AircraftUrlUpdate')
 
 		-- lookup URL
-		if (prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '') then
-			LrErrors.throwUserError('Please set URL for lookup')
-		else
-			lookupURL = trim(prefs.prefLookupUrl)
-		end
+		lookupURL = trim(prefs.prefLookupUrl)
 
 		-- get a reference to the photos within the current catalog
 		local catalog = LrApplication.activeCatalog()
