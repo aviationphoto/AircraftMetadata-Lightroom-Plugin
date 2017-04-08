@@ -33,6 +33,9 @@ function AircraftMetadataImport()
 		context:addCleanupHandler(function()
 			progressScope:done()
 		end)
+
+		loadPrefs()
+
 		local metadataCache = {}
 		local countSelected = 0
 		local countProcessed = 0
@@ -41,11 +44,8 @@ function AircraftMetadataImport()
 		local countNoReg = 0
 		local countRegNotFound = 0
 		local messageEnd = 'Aircraft Metadata Lookup finished'
-
 		local flagRegFound = true
 		local flagRun = true
-
-		loadPrefs()
 
 		-- check if logging enabled
 		if prefs.prefFlagLogging then
@@ -109,7 +109,7 @@ function AircraftMetadataImport()
 						if not metadataCache[searchRegistration] then
 							-- no, we need to do a lookup
 							countLookup = countLookup + 1
-							lookupURL = prefs.prefLookupUrl..searchRegistration
+							lookupURL = trim(prefs.prefLookupUrl)..searchRegistration
 							logger:info(photoFilename..' - looking up registration at '..lookupURL..' for: >>'..searchRegistration..'<<')
 							-- do the lookup
 							content = LrHttp.get(lookupURL)
