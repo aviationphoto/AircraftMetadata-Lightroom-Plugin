@@ -48,8 +48,8 @@ if prefs.prefAircraftToken2 == nil or prefs.prefAircraftToken2 == '' then
 	prefs.prefAircraftToken2 = '"'
 end
 if prefs.prefManufacturerToken1 == nil or prefs.prefManufacturerToken1 == '' then
-	prefs.prefManufacturerToken1 = 'manu='
+	prefs.prefManufacturerToken1 = '/manufacturer/'
 end
 if prefs.prefManufacturerToken2 == nil or prefs.prefManufacturerToken2 == '' then
-	prefs.prefManufacturerToken2 = '"'
+	prefs.prefManufacturerToken2 = '/'
 end
