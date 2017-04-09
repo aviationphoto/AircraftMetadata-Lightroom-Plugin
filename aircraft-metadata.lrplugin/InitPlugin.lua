@@ -26,6 +26,9 @@ end
 if prefs.prefKeywordRegNotFound == nil or prefs.prefKeywordRegNotFound == '' then
 	prefs.prefKeywordRegNotFound = 'RegNotFound'
 end
+if prefs.prefKeywordWrongReg == nil or prefs.prefKeywordWrongReg == '' then
+	prefs.prefKeywordWrongReg = 'WronReg'
+end
 if prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '' then
 	prefs.prefLookupUrl = 'https://www.jetphotos.com/showphotos.php?regsearch='
 end

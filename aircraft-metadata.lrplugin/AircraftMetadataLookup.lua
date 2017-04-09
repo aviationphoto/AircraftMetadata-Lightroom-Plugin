@@ -52,6 +52,7 @@ function AircraftMetadataImport()
 		catalog:withWriteAccessDo('set keyword',
 		function()
 			keywordRegNotFound = catalog:createKeyword(LrPrefs.prefKeywordRegNotFound, {}, false, nil, true)
+			keywordWrongReg = catalog:createKeyword(LrPrefs.prefKeywordWrongReg, {}, false, nil, true)
 		end)
 
 		-- check if user selected at least one photos
@@ -137,6 +138,10 @@ function AircraftMetadataImport()
 									LrLogger:info(photoFilename..' -  lookup returned wrong registration: '..foundRegistration..' instead of '..searchRegistration)
 									countNoReg = countNoReg + 1
 									-- mark photo with keyword wrong_reg
+									catalog:withWriteAccessDo('set keyword',
+									function()
+										photo:addKeyword(keywordWrongReg)
+									end)
 								end
 							end
 						else
@@ -155,8 +160,9 @@ function AircraftMetadataImport()
 								writeMetadata(photo, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
 								-- set aircraft url - we overwrite this in any case
 								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', metadataCache[searchRegistration].lookupURL)
-								-- remove reg_not_found if set
+								-- remove keywords if set
 								photo:removeKeyword(keywordRegNotFound)
+								photo:removeKeyword(keywordWrongReg)
 							end)
 						end
 					else

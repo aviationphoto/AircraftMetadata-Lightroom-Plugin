@@ -76,7 +76,7 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 		-- section tagging settings
 		{
 			title = 'Tagging',
-			-- tag reg not found
+			-- keyword reg not found
 			viewFactory:row {
 				viewFactory:static_text {
 					title = 'Keyword if registration not found',
@@ -87,9 +87,16 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 					wraps = false,
 				},
 			},
+			-- keyword wrong reg
 			viewFactory:row {
-				viewFactory:separator {
-					fill_horizontal = 1},
+				viewFactory:static_text {
+					title = 'Keyword if lookup returns wrong registration',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefKeywordWrongReg', object = prefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
 			},
 		},
 		-- section lookup settings
