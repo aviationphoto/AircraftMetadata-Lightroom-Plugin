@@ -59,6 +59,10 @@ function loadPrefs()
 	if (LrPrefs.prefKeywordRegNotFound == nil or LrPrefs.prefKeywordRegNotFound == '') then
 		LrErrors.throwUserError('Please set KeywordRegNotFound')
 	end
+	-- lookup KeywordWrongReg
+	if (LrPrefs.keywordWrongReg == nil or LrPrefs.keywordWrongReg == '') then
+		LrErrors.throwUserError('Please set KeywordWrongReg')
+	end
 	-- lookup URL
 	if (LrPrefs.prefLookupUrl == nil or LrPrefs.prefLookupUrl == '') then
 		LrErrors.throwUserError('Please set URL for lookup')
