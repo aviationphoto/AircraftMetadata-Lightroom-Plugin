@@ -47,11 +47,11 @@ function AircraftMetadataImport()
 		-- get a reference to the photos within the current catalog
 		local catalog = LrApplication.activeCatalog()
 		local selectedPhotos = catalog:getTargetPhotos()
-		
+
 		-- create / get keyword
 		catalog:withWriteAccessDo('set keyword',
 		function()
-			keyword = catalog:createKeyword(LrPrefs.prefKeywordRegNotFound, {}, false, nil, true)
+			keywordRegNotFound = catalog:createKeyword(LrPrefs.prefKeywordRegNotFound, {}, false, nil, true)
 		end)
 
 		-- check if user selected at least one photos
@@ -112,7 +112,7 @@ function AircraftMetadataImport()
 								-- mark photo with keyword reg_not_found
 								catalog:withWriteAccessDo('set keyword',
 								function()
-									photo:addKeyword(keyword)
+									photo:addKeyword(keywordRegNotFound)
 								end)
 							else
 								-- lookup returned something usefull
@@ -149,42 +149,14 @@ function AircraftMetadataImport()
 							-- write metadata to photo
 							catalog:withWriteAccessDo('set aircraft metadata',
 							function()
-								-- check if user allows overwrite of existing registration metadata
-								if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
-									photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
-								else
-									if LrPrefs.prefFlagOverwrite then
-										photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
-									end
-								end
-								-- check if user allows overwrite of existing airline metadata
-								if photo:getPropertyForPlugin(_PLUGIN, 'airline') == nil then
-									photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
-								else
-									if LrPrefs.prefFlagOverwrite then
-										photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
-									end
-								end
-								-- check if user allows overwrite of existing manufacturer metadata
-								if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer') == nil then
-									photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
-								else
-									if LrPrefs.prefFlagOverwrite then
-										photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
-									end
-								end
-								-- check if user allows overwrite of existing type metadata
-								if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_type') == nil then
-									photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
-								else
-									if LrPrefs.prefFlagOverwrite then
-										photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
-									end
-								end
+								writeMetadata(photo, 'registration', metadataCache[searchRegistration].foundRegistration)
+								writeMetadata(photo, 'airline', metadataCache[searchRegistration].foundAirline)
+								writeMetadata(photo, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
+								writeMetadata(photo, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
 								-- set aircraft url - we overwrite this in any case
 								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', metadataCache[searchRegistration].lookupURL)
 								-- remove reg_not_found if set
-								photo:removeKeyword(keyword)
+								photo:removeKeyword(keywordRegNotFound)
 							end)
 						end
 					else
@@ -202,6 +174,22 @@ function AircraftMetadataImport()
 		LrDialogs.showBezel(messageEnd)
 		LrLogger:info('>>>> done')
 	end)
+end
+
+------- writeMetadata() -------------------------------------------------------
+-- write metadata to db fields
+function writeMetadata(photo, fieldName, fieldValue)
+	-- check if field is empty
+	if photo:getPropertyForPlugin(_PLUGIN, fieldName) == nil then
+		-- yes, write to empty field
+		photo:setPropertyForPlugin(_PLUGIN, fieldName, fieldValue)
+	else
+		-- check if user allows overwrite of existing metadata
+		if LrPrefs.prefFlagOverwrite then
+			-- yes, overwrite existing entry
+			photo:setPropertyForPlugin(_PLUGIN, fieldName, fieldValue)
+		end
+	end
 end
 
 ------- extractMetadata() -----------------------------------------------------
