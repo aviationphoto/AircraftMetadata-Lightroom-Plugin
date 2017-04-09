@@ -56,3 +56,6 @@ end
 if prefs.prefManufacturerToken2 == nil or prefs.prefManufacturerToken2 == '' then
 	prefs.prefManufacturerToken2 = '/'
 end
+if prefs.prefSuccessfulSearch == nil or prefs.prefSuccessfulSearch == '' then
+	prefs.prefSuccessfulSearch = '>Reg:'
+end

@@ -95,4 +95,8 @@ function loadPrefs()
 	if (LrPrefs.prefManufacturerToken2 == nil or LrPrefs.prefManufacturerToken2 == '') then
 		LrErrors.throwUserError('Please set manufacturer token 2')
 	end
+	-- lookup Marker for Successful Search
+	if (LrPrefs.prefSuccessfulSearch == nil or LrPrefs.prefSuccessfulSearch == '') then
+		LrErrors.throwUserError('Please set marker for successful search')
+	end
 end

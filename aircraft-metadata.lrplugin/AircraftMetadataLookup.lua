@@ -105,11 +105,11 @@ function AircraftMetadataImport()
 							content = LrHttp.get(lookupURL)
 							--LrDialogs.message(photoFilename, content, 'info')
 							-- check if lookup returned something usefull
-							if string.find(content, '>Reg:') == nil then
+							if string.find(content, LrPrefs.prefSuccessfulSearch) == nil then
 								-- lookup returned nothing usefull
 								countRegNotFound = countRegNotFound + 1
 								flagRegFound = false
-								LrLogger:info(photoFilename..' - no metadata found for registration '..searchRegistration)
+								LrLogger:warn(photoFilename..' - REG NOT FOUND: no metadata found for registration '..searchRegistration)
 								-- mark photo with keyword reg_not_found
 								catalog:withWriteAccessDo('set keyword',
 								function()
@@ -135,8 +135,9 @@ function AircraftMetadataImport()
 									LrLogger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
 								else
 									-- no, lookup returned wrong registration
-									LrLogger:info(photoFilename..' -  lookup returned wrong registration: '..foundRegistration..' instead of '..searchRegistration)
+									LrLogger:warn(photoFilename..' - WRONG REG: lookup returned wrong registration: '..foundRegistration..' instead of '..searchRegistration)
 									countNoReg = countNoReg + 1
+									flagRegFound = false
 									-- mark photo with keyword wrong_reg
 									catalog:withWriteAccessDo('set keyword',
 									function()

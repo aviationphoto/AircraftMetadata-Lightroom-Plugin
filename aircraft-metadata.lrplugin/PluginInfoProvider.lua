@@ -175,6 +175,16 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 					wraps = false,
 				},
 			},
+			viewFactory:row {
+				viewFactory:static_text {
+					title = 'Marker for successful search',
+				},
+				viewFactory:edit_field {
+					value = bind {key = 'prefSuccessfulSearch', object = prefs},
+					width_in_chars = 20,
+					wraps = false,
+				},
+			},
 		},
 	}
 end
