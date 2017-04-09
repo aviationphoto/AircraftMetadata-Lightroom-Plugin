@@ -47,9 +47,10 @@ function AircraftUrlUpdate()
 		end
 
 		logger:info('>>>> running AircraftUrlUpdate')
+		logger:info('Lightroom version: '..LrApplication.versionString())
 
 		-- lookup URL
-		lookupURL = trim(prefs.prefLookupUrl)
+		lookupURL = LrStringUtils.trimWhitespace(prefs.prefLookupUrl)
 
 		-- get a reference to the photos within the current catalog
 		local catalog = LrApplication.activeCatalog()
@@ -97,7 +98,7 @@ function AircraftUrlUpdate()
 					else
 						-- looks good, do the update
 						oldURL = photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url')
-						newURL = lookupURL..trim(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
+						newURL = lookupURL..LrStringUtils.trimWhitespace(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
 						catalog:withWriteAccessDo('set aircraft metadata',
 						function()
 							photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', newURL)

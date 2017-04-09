@@ -26,15 +26,10 @@ LrPathUtils = import 'LrPathUtils'
 LrHttp = import 'LrHttp'
 LrProgressScope = import 'LrProgressScope'
 LrErrors = import 'LrErrors'
+LrStringUtils = import 'LrStringUtils'
 
 prefs = import 'LrPrefs'.prefsForPlugin()
 logger = import 'LrLogger'('AircraftMetadata')
-
-------- trim() ----------------------------------------------------------------
--- remove trailing and leading whitespace from string
-function trim(s)
-  return (s:gsub('^%s*(.-)%s*$', '%1'))
-end
 
 ------- clearLogfile() --------------------------------------------------------
 -- clear old logfile

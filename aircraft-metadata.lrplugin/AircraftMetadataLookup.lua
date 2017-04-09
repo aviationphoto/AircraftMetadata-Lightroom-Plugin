@@ -105,12 +105,12 @@ function AircraftMetadataImport()
 					-- do we have a registration?
 					if not (searchRegistration == '' or searchRegistration == nil) then
 						-- yes, photo has registration
-						searchRegistration = string.upper(trim(searchRegistration))
+						searchRegistration = string.upper(LrStringUtils.trimWhitespace(searchRegistration))
 						-- is registration already in cache?
 						if not metadataCache[searchRegistration] then
 							-- no, we need to do a lookup
 							countLookup = countLookup + 1
-							lookupURL = trim(prefs.prefLookupUrl)..searchRegistration
+							lookupURL = LrStringUtils.trimWhitespace(prefs.prefLookupUrl)..searchRegistration
 							logger:info(photoFilename..' - looking up registration at '..lookupURL..' for: '..searchRegistration)
 							-- do the lookup
 							content = LrHttp.get(lookupURL)
@@ -128,19 +128,19 @@ function AircraftMetadataImport()
 								end)
 							else
 								-- lookup returned something usefull
-								foundRegistration = trim(extractMetadata(content, prefs.prefRegistrationToken1, prefs.prefRegistrationToken2))
+								foundRegistration = LrStringUtils.trimWhitespace(extractMetadata(content, prefs.prefRegistrationToken1, prefs.prefRegistrationToken2))
 								-- check if lookup returned the right registration
 								if searchRegistration == foundRegistration then
 									-- yes, isolate metadata
-									foundAirline = trim(extractMetadata(content, prefs.prefAirlineToken1, prefs.prefAirlineToken2))
-									foundAircraft = trim(extractMetadata(content, prefs.prefAircraftToken1, prefs.prefAircraftToken2))
+									foundAirline = LrStringUtils.trimWhitespace(extractMetadata(content, prefs.prefAirlineToken1, prefs.prefAirlineToken2))
+									foundAircraft = LrStringUtils.trimWhitespace(extractMetadata(content, prefs.prefAircraftToken1, prefs.prefAircraftToken2))
 									-- split aircraft info in manufacturer and type
-									foundAircraftManufacturer = trim(extractMetadata(content, prefs.prefManufacturerToken1, prefs.prefManufacturerToken2))
+									foundAircraftManufacturer = LrStringUtils.trimWhitespace(extractMetadata(content, prefs.prefManufacturerToken1, prefs.prefManufacturerToken2))
 									-- check if manufacturer is set
 									if foundAircraftManufacturer == '' then
 										foundAircraftManufacturer = 'not set'
 									end
-									foundAircraftType = trim(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
+									foundAircraftType = LrStringUtils.trimWhitespace(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
 									-- cache found metadata
 									metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType, lookupURL = lookupURL}
 									logger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
