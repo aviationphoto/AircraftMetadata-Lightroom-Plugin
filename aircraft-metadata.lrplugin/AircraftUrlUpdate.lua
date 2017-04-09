@@ -31,6 +31,7 @@ function AircraftUrlUpdate()
 		end)
 
 		loadPrefs()
+		startLogger('AircraftUrlUpdate')
 
 		local messageEnd = 'Aircraft URL Update finished'
 		local countSelected = 0
@@ -38,19 +39,8 @@ function AircraftUrlUpdate()
 		local countSkipped = 0
 		local flagRun = true
 
-		-- check if logging enabled
-		if prefs.prefFlagLogging then
-			logger:enable('logfile')
-			clearLogfile()
-		else
-			logger:disable()
-		end
-
-		logger:info('>>>> running AircraftUrlUpdate')
-		logger:info('Lightroom version: '..LrApplication.versionString())
-
 		-- lookup URL
-		lookupURL = LrStringUtils.trimWhitespace(prefs.prefLookupUrl)
+		lookupURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)
 
 		-- get a reference to the photos within the current catalog
 		local catalog = LrApplication.activeCatalog()
@@ -64,7 +54,7 @@ function AircraftUrlUpdate()
 				flagRun = false
 				progressScope:done()
 				messageEnd = 'Aircraft URL Update canceled'
-				logger:info('no active photo selection - user canceled run on entire filmstrip')
+				LrLogger:info('no active photo selection - user canceled run on entire filmstrip')
 			end
 		end
 
@@ -74,7 +64,7 @@ function AircraftUrlUpdate()
 			for _ in pairs(selectedPhotos) do
 				countSelected = countSelected + 1
 			end
-			logger:info('performing update on '..countSelected..' selected photos')
+			LrLogger:info('performing update on '..countSelected..' selected photos')
 			for _, photo in ipairs (selectedPhotos) do
 				countProcessed = countProcessed + 1
 				-- read photo name for logging
@@ -87,13 +77,13 @@ function AircraftUrlUpdate()
 				-- check if a registration is set
 				if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
 					-- photo has no url
-					logger:info(photoFilename..' - skipped: no registration set')
+					LrLogger:info(photoFilename..' - skipped: no registration set')
 					countSkipped = countSkipped + 1
 				else
 					-- check if url is set
 					if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url') == nil then
 						-- photo has no registration
-						logger:info(photoFilename..' - skipped: no url set')
+						LrLogger:info(photoFilename..' - skipped: no url set')
 						countSkipped = countSkipped + 1
 					else
 						-- looks good, do the update
@@ -103,16 +93,16 @@ function AircraftUrlUpdate()
 						function()
 							photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', newURL)
 						end)
-						logger:info(photoFilename..' - url updated: '..oldURL..' --> '..newURL)
+						LrLogger:info(photoFilename..' - url updated: '..oldURL..' --> '..newURL)
 					end
 				end
 				progressScope:setPortionComplete(countProcessed, countSelected)
 			end
 		end
 		progressScope:done()
-		logger:info('processed '..countProcessed..' photos ('..countSkipped..' skipped)')
+		LrLogger:info('processed '..countProcessed..' photos ('..countSkipped..' skipped)')
 		LrDialogs.showBezel(messageEnd)
-		logger:info('>>>> lookup done')
+		LrLogger:info('>>>> done')
 	end)
 end
 
