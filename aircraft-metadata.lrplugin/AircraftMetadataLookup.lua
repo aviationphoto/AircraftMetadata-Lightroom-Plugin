@@ -56,6 +56,7 @@ function AircraftMetadataImport()
 		end
 
 		logger:info('>>>> running AircraftMetadataLookup')
+		logger:info('Lightroom version: '..LrApplication.versionString())
 		-- get a reference to the photos within the current catalog
 		local catalog = LrApplication.activeCatalog()
 		local selectedPhotos = catalog:getTargetPhotos()
@@ -95,7 +96,7 @@ function AircraftMetadataImport()
 					-- read photo name for logging
 					-- check if we are working on a copy
 					if photo:getFormattedMetadata('copyName') == nil then
-						photoFilename = photo:getFormattedMetadata('fileName')
+						photoFilename = photo:getFormattedMetadata('fileName')..'          '
 					else
 						photoFilename = photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
 					end
@@ -110,7 +111,7 @@ function AircraftMetadataImport()
 							-- no, we need to do a lookup
 							countLookup = countLookup + 1
 							lookupURL = trim(prefs.prefLookupUrl)..searchRegistration
-							logger:info(photoFilename..' - looking up registration at '..lookupURL..' for: >>'..searchRegistration..'<<')
+							logger:info(photoFilename..' - looking up registration at '..lookupURL..' for: '..searchRegistration)
 							-- do the lookup
 							content = LrHttp.get(lookupURL)
 							--LrDialogs.message(photoFilename, content, 'info')
@@ -119,7 +120,7 @@ function AircraftMetadataImport()
 								-- lookup returned nothing usefull
 								countRegNotFound = countRegNotFound + 1
 								flagRegFound = false
-								logger:info(photoFilename..' - no metadata found for registration >>'..searchRegistration..'<<')
+								logger:info(photoFilename..' - no metadata found for registration '..searchRegistration)
 								-- mark photo with keyword reg_not_found
 								catalog:withWriteAccessDo('set keyword',
 								function()
@@ -145,7 +146,7 @@ function AircraftMetadataImport()
 									logger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
 								else
 									-- no, lookup returned wrong registration
-									logger:info(photoFilename..' -  lookup returned wrong registration: >>'..foundRegistration..'<< instead of >>'..searchRegistration..'<<')
+									logger:info(photoFilename..' -  lookup returned wrong registration: '..foundRegistration..' instead of '..searchRegistration)
 									countNoReg = countNoReg + 1
 									-- mark photo with keyword wrong_reg
 								end
@@ -218,14 +219,16 @@ end
 ------- extractMetadata() -----------------------------------------------------
 -- isolate metadata - sorry, creepy html parsing, no fancy things like JSON available
 function extractMetadata(payload, Token1, Token2)
-	local posStart, posEnd = string.find(payload, Token1)
+	posStart, posEnd = string.find(payload, Token1)
 	if posEnd == nil then
+		logger:error('Token '..Token1..' not found.')
 		LrErrors.throwUserError('Token "'..Token1..'" not found.')
 	else
-		local line = string.sub(payload, posEnd + 1)
+		line = string.sub(payload, posEnd + 1)
 		--LrDialogs.message('Lookup Airline - after Token 1', line, 'info')
 		posStart, posEnd = string.find(line, Token2)
 		if posStart == nil then
+			logger:error('Token '..Token2..' not found.')
 			LrErrors.throwUserError('Token "'..Token2..'" not found.')
 		else
 			line = string.sub(line, 1, posStart - 1)
