@@ -18,12 +18,10 @@ along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 require "Utilities"
 
-local AircraftMetadataImport = {}
-
 function AircraftMetadataImport()
 	LrFunctionContext.callWithContext( "Aircraft Metadata Import", function(context)
 		-- define progress bar
-		local progressScope = LrProgressScope({title = 'Aircraft Metadata Lookup'})
+		progressScope = LrProgressScope({title = 'Aircraft Metadata Lookup'})
 		progressScope:setCancelable(true)
 		-- cleanup if error is thrown
 		context:addCleanupHandler(function()
@@ -33,20 +31,17 @@ function AircraftMetadataImport()
 		loadPrefs()
 		startLogger('AircraftMetadataLookup')
 
-		local metadataCache = {}
-		local countSelected = 0
-		local countProcessed = 0
-		local countCacheHit = 0
-		local countLookup = 0
-		local countNoReg = 0
-		local countRegNotFound = 0
-		local messageEnd = 'Aircraft Metadata Lookup finished'
-		local flagRegFound = true
-		local flagRun = true
-
-		-- get a reference to the photos within the current catalog
-		local catalog = LrApplication.activeCatalog()
-		local selectedPhotos = catalog:getTargetPhotos()
+		-- initialize variables
+		messageEnd = 'Aircraft Metadata Lookup finished'
+		metadataCache = {}
+		countSelected = 0
+		countProcessed = 0
+		countCacheHit = 0
+		countLookup = 0
+		countNoReg = 0
+		countRegNotFound = 0
+		flagRegFound = true
+		flagRun = true
 
 		-- create / get keyword
 		catalog:withWriteAccessDo('set keyword',
@@ -57,7 +52,7 @@ function AircraftMetadataImport()
 
 		-- check if user selected at least one photos
 		if catalog:getTargetPhoto() == nil then
-			local dialogAction = LrDialogs.confirm('Aircraft Metadata Lookup', 'No photo selected - run lookup on all photos in filmstrip?', 'Yes', 'No')
+			dialogAction = LrDialogs.confirm('Aircraft Metadata Lookup', 'No photo selected - run lookup on all photos in filmstrip?', 'Yes', 'No')
 			if dialogAction == 'cancel' then
 				-- cleanup if canceled by user
 				flagRun = false

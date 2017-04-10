@@ -18,12 +18,10 @@ along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 require "Utilities"
 
-local AircraftUrlUpdate = {}
-
 function AircraftUrlUpdate()
 	LrFunctionContext.callWithContext( "Aircraft Metadata Import", function(context)
 		-- define progress bar
-		local progressScope = LrProgressScope({title = 'Aircraft URL Update'})
+		progressScope = LrProgressScope({title = 'Aircraft URL Update'})
 		progressScope:setCancelable(true)
 		-- cleanup if error is thrown
 		context:addCleanupHandler(function()
@@ -33,22 +31,16 @@ function AircraftUrlUpdate()
 		loadPrefs()
 		startLogger('AircraftUrlUpdate')
 
-		local messageEnd = 'Aircraft URL Update finished'
-		local countSelected = 0
-		local countProcessed = 0
-		local countSkipped = 0
-		local flagRun = true
-
-		-- lookup URL
-		lookupURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)
-
-		-- get a reference to the photos within the current catalog
-		local catalog = LrApplication.activeCatalog()
-		local selectedPhotos = catalog:getTargetPhotos()
+		-- initialize variables
+		messageEnd = 'Aircraft URL Update finished'
+		countSelected = 0
+		countProcessed = 0
+		countSkipped = 0
+		flagRun = true
 
 		-- check if user selected at least one photos
 		if catalog:getTargetPhoto() == nil then
-			local dialogAction = LrDialogs.confirm('Aircraft URL Update', 'No photo selected - run update on all photos in filmstrip?', 'Yes', 'No')
+			dialogAction = LrDialogs.confirm('Aircraft URL Update', 'No photo selected - run update on all photos in filmstrip?', 'Yes', 'No')
 			if dialogAction == 'cancel' then
 				-- cleanup if canceled by user
 				flagRun = false
@@ -70,13 +62,13 @@ function AircraftUrlUpdate()
 				-- read photo name for logging
 				-- check if we are working on a copy
 				if photo:getFormattedMetadata('copyName') == nil then
-					photoFilename = photo:getFormattedMetadata('fileName')
+					photoFilename = photo:getFormattedMetadata('fileName')..'          '
 				else
 					photoFilename = photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
 				end
 				-- check if a registration is set
 				if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
-					-- photo has no url
+					-- photo has no url, maybee metadata update failed
 					LrLogger:info(photoFilename..' - skipped: no registration set')
 					countSkipped = countSkipped + 1
 				else
@@ -86,14 +78,21 @@ function AircraftUrlUpdate()
 						LrLogger:info(photoFilename..' - skipped: no url set')
 						countSkipped = countSkipped + 1
 					else
-						-- looks good, do the update
+						-- looks good, go on
 						oldURL = photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url')
-						newURL = lookupURL..LrStringUtils.trimWhitespace(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
-						catalog:withWriteAccessDo('set aircraft metadata',
-						function()
-							photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', newURL)
-						end)
-						LrLogger:info(photoFilename..' - url updated: '..oldURL..' --> '..newURL)
+						newURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)..LrStringUtils.trimWhitespace(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
+						-- check if we need a update
+						if oldURL == newURL then
+							-- no
+							LrLogger:info(photoFilename..' - '..oldURL..' is fine, no update necessary')
+						else
+							-- yes
+							catalog:withWriteAccessDo('set aircraft metadata',
+							function()
+								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', newURL)
+							end)
+							LrLogger:info(photoFilename..' - url updated: '..oldURL..' --> '..newURL)
+						end
 					end
 				end
 				progressScope:setPortionComplete(countProcessed, countSelected)

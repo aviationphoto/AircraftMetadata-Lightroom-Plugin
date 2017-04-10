@@ -30,6 +30,8 @@ LrStringUtils = import 'LrStringUtils'
 LrSystemInfo = import 'LrSystemInfo'
 LrPrefs = import 'LrPrefs'.prefsForPlugin()
 LrLogger = import 'LrLogger'('AircraftMetadata')
+catalog = LrApplication.activeCatalog()
+selectedPhotos = catalog:getTargetPhotos()
 
 ------- startLogger() --------------------------------------------------------
 -- start logger
@@ -60,7 +62,7 @@ function loadPrefs()
 		LrErrors.throwUserError('Please set KeywordRegNotFound')
 	end
 	-- lookup KeywordWrongReg
-	if (LrPrefs.keywordWrongReg == nil or LrPrefs.keywordWrongReg == '') then
+	if (LrPrefs.prefKeywordWrongReg == nil or LrPrefs.prefKeywordWrongReg == '') then
 		LrErrors.throwUserError('Please set KeywordWrongReg')
 	end
 	-- lookup URL
