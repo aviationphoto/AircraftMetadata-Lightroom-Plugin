@@ -112,18 +112,13 @@ function AircraftMetadataImport()
 								end)
 							else
 								-- lookup returned something usefull
-								foundRegistration = LrStringUtils.trimWhitespace(extractMetadata(content, LrPrefs.prefRegistrationToken1, LrPrefs.prefRegistrationToken2))
+								foundRegistration = extractMetadata(content, LrPrefs.prefRegistrationToken1, LrPrefs.prefRegistrationToken2)
 								-- check if lookup returned the right registration
 								if searchRegistration == foundRegistration then
 									-- yes, isolate metadata
-									foundAirline = LrStringUtils.trimWhitespace(extractMetadata(content, LrPrefs.prefAirlineToken1, LrPrefs.prefAirlineToken2))
-									foundAircraft = LrStringUtils.trimWhitespace(extractMetadata(content, LrPrefs.prefAircraftToken1, LrPrefs.prefAircraftToken2))
-									-- split aircraft info in manufacturer and type
-									foundAircraftManufacturer = LrStringUtils.trimWhitespace(extractMetadata(content, LrPrefs.prefManufacturerToken1, LrPrefs.prefManufacturerToken2))
-									-- check if manufacturer is set
-									if foundAircraftManufacturer == '' then
-										foundAircraftManufacturer = 'not set'
-									end
+									foundAirline = extractMetadata(content, LrPrefs.prefAirlineToken1, LrPrefs.prefAirlineToken2)
+									foundAircraft = extractMetadata(content, LrPrefs.prefAircraftToken1, LrPrefs.prefAircraftToken2)
+									foundAircraftManufacturer = extractMetadata(content, LrPrefs.prefManufacturerToken1, LrPrefs.prefManufacturerToken2)
 									foundAircraftType = LrStringUtils.trimWhitespace(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
 									-- cache found metadata
 									metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType, lookupURL = lookupURL}
@@ -209,8 +204,11 @@ function extractMetadata(payload, Token1, Token2)
 			LrLogger:error('Token '..Token2..' not found.')
 			LrErrors.throwUserError('Token "'..Token2..'" not found.')
 		else
-			line = string.sub(line, 1, posStart - 1)
+			line = LrStringUtils.trimWhitespace(string.sub(line, 1, posStart - 1))
 			--LrDialogs.message('Lookup Airline - after Token 2', line, 'info')
+			if line == '' then
+				line = 'not set'
+			end
 			return line
 		end
 	end
