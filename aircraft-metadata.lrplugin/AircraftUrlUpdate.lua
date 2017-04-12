@@ -46,7 +46,7 @@ function AircraftUrlUpdate()
 				flagRun = false
 				progressScope:done()
 				messageEnd = 'Aircraft URL Update canceled'
-				LrLogger:info('no active photo selection - user canceled run on entire filmstrip')
+				log_info('no active photo selection - user canceled run on entire filmstrip')
 			end
 		end
 
@@ -56,13 +56,13 @@ function AircraftUrlUpdate()
 			for _ in pairs(selectedPhotos) do
 				countSelected = countSelected + 1
 			end
-			LrLogger:info('performing update on '..countSelected..' selected photos')
+			log_info('performing update on '..countSelected..' selected photos')
 			for _, photo in ipairs (selectedPhotos) do
 				countProcessed = countProcessed + 1
 				-- check if user hit cancel in progress bar
 				if progressScope:isCanceled() then
 					messageEnd = 'Aircraft URL Update canceled'
-					LrLogger:info('canceled by user')
+					log_info('canceled by user')
 					break
 				else
 					-- set photo name for logging
@@ -75,13 +75,13 @@ function AircraftUrlUpdate()
 					-- check if a registration is set
 					if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
 						-- photo has no url, maybee metadata update failed
-						LrLogger:info(photoFilename..' - skipped: no registration set')
+						log_info(photoFilename..' - skipped: no registration set')
 						countSkipped = countSkipped + 1
 					else
 						-- check if url is set
 						if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url') == nil then
 							-- photo has no registration
-							LrLogger:info(photoFilename..' - skipped: no url set')
+							log_info(photoFilename..' - skipped: no url set')
 							countSkipped = countSkipped + 1
 						else
 							-- looks good, go on
@@ -90,14 +90,14 @@ function AircraftUrlUpdate()
 							-- check if we need a update
 							if oldURL == newURL then
 								-- no
-								LrLogger:info(photoFilename..' - '..oldURL..' is fine, no update necessary')
+								log_info(photoFilename..' - '..oldURL..' is fine, no update necessary')
 							else
 								-- yes
 								catalog:withWriteAccessDo('set aircraft metadata',
 								function()
 									photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', newURL)
 								end)
-								LrLogger:info(photoFilename..' - url updated: '..oldURL..' --> '..newURL)
+								log_info(photoFilename..' - url updated: '..oldURL..' --> '..newURL)
 							end
 						end
 					end
@@ -106,9 +106,9 @@ function AircraftUrlUpdate()
 			end
 		end
 		progressScope:done()
-		LrLogger:info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countSkipped..' skipped)')
+		log_info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countSkipped..' skipped)')
 		LrDialogs.showBezel(messageEnd)
-		LrLogger:info('>>>> done')
+		log_info('>>>> done')
 	end)
 end
 

@@ -30,6 +30,7 @@ LrStringUtils = import 'LrStringUtils'
 LrSystemInfo = import 'LrSystemInfo'
 LrPrefs = import 'LrPrefs'.prefsForPlugin()
 LrLogger = import 'LrLogger'('AircraftMetadata')
+log_error, log_warn, log_info = LrLogger:quick('error', 'warn', 'info')
 catalog = LrApplication.activeCatalog()
 selectedPhotos = catalog:getTargetPhotos()
 
@@ -44,14 +45,14 @@ function startLogger(functionName)
 		if LrFileUtils.exists( logPath ) then
 			success, reason = LrFileUtils.delete( logPath )
 			if not success then
-				LrLogger:error('error deleting existing logfile!'..reason)
+				log_error('error deleting existing logfile!'..reason)
 			end
 		end
 	else
 		LrLogger:disable()
 	end
-	LrLogger:info('>>>> running '..functionName)
-	LrLogger:info('Lightroom version: '..LrApplication.versionString()..' on '..LrSystemInfo.summaryString())
+	log_info('>>>> running '..functionName)
+	log_info('Lightroom version: '..LrApplication.versionString()..' on '..LrSystemInfo.summaryString())
 end
 
 ------- loadPrefs() -----------------------------------------------------------

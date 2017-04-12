@@ -58,7 +58,7 @@ function AircraftMetadataImport()
 				flagRun = false
 				progressScope:done()
 				messageEnd = 'Aircraft Metadata Lookup canceled'
-				LrLogger:info('no active photo selection - user canceled run on entire filmstrip')
+				log_info('no active photo selection - user canceled run on entire filmstrip')
 			end
 		end
 
@@ -68,7 +68,7 @@ function AircraftMetadataImport()
 			for _ in pairs(selectedPhotos) do
 				countSelected = countSelected + 1
 			end
-			LrLogger:info('performing lookup for '..countSelected..' selected photos')
+			log_info('performing lookup for '..countSelected..' selected photos')
 			-- loop through each of the photos
 			for _, photo in ipairs (selectedPhotos) do
 				countProcessed = countProcessed + 1
@@ -76,7 +76,7 @@ function AircraftMetadataImport()
 				-- check if user hit cancel in progress bar
 				if progressScope:isCanceled() then
 					messageEnd = 'Aircraft Metadata Lookup canceled'
-					LrLogger:info('canceled by user')
+					log_info('canceled by user')
 					break
 				else
 					-- set photo name for logging
@@ -97,7 +97,7 @@ function AircraftMetadataImport()
 							-- no, we need to do a lookup
 							countLookup = countLookup + 1
 							lookupURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)..searchRegistration
-							LrLogger:info(photoFilename..' - looking up registration at '..lookupURL..' for: '..searchRegistration)
+							log_info(photoFilename..' - looking up registration at '..lookupURL..' for: '..searchRegistration)
 							-- do the lookup
 							content = LrHttp.get(lookupURL)
 							--LrDialogs.message(photoFilename, content, 'info')
@@ -106,7 +106,7 @@ function AircraftMetadataImport()
 								-- lookup returned nothing usefull
 								countRegNotFound = countRegNotFound + 1
 								flagRegFound = false
-								LrLogger:warn(photoFilename..' - REG NOT FOUND: no metadata found for registration '..searchRegistration)
+								log_warn(photoFilename..' - REG NOT FOUND: no metadata found for registration '..searchRegistration)
 								-- mark photo with keyword reg_not_found
 								catalog:withWriteAccessDo('set keyword',
 								function()
@@ -124,10 +124,10 @@ function AircraftMetadataImport()
 									foundAircraftType = LrStringUtils.trimWhitespace(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
 									-- cache found metadata
 									metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType, lookupURL = lookupURL}
-									LrLogger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
+									log_info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
 								else
 									-- no, lookup returned wrong registration
-									LrLogger:warn(photoFilename..' - WRONG REG: lookup returned wrong registration: '..foundRegistration..' instead of '..searchRegistration)
+									log_warn(photoFilename..' - WRONG REG: lookup returned wrong registration: '..foundRegistration..' instead of '..searchRegistration)
 									countNoReg = countNoReg + 1
 									flagRegFound = false
 									-- mark photo with keyword wrong_reg
@@ -139,7 +139,7 @@ function AircraftMetadataImport()
 							end
 						else
 							-- yes, use cached metadata
-							LrLogger:info(photoFilename..' - using cached metadata for: '..metadataCache[searchRegistration].foundRegistration)
+							log_info(photoFilename..' - using cached metadata for: '..metadataCache[searchRegistration].foundRegistration)
 							countCacheHit = countCacheHit + 1
 						end
 						-- check if we have a reg and user did not hit cancel
@@ -160,18 +160,18 @@ function AircraftMetadataImport()
 						end
 					else
 						-- photo has no registration
-						LrLogger:info(photoFilename..' - no registration set')
+						log_info(photoFilename..' - no registration set')
 						countNoReg = countNoReg + 1
 					end
 					-- update progress bar
 					progressScope:setPortionComplete(countProcessed, countSelected)
 				end
 			end
-			LrLogger:info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countLookup..' web lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' without reg)')
+			log_info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countLookup..' web lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' without reg)')
 			progressScope:done()
 		end
 		LrDialogs.showBezel(messageEnd)
-		LrLogger:info('>>>> done')
+		log_info('>>>> done')
 	end)
 end
 
@@ -196,14 +196,14 @@ end
 function extractMetadata(payload, Token1, Token2)
 	posStart, posEnd = string.find(payload, Token1)
 	if posEnd == nil then
-		LrLogger:error('Token '..Token1..' not found.')
+		log_error('Token '..Token1..' not found.')
 		LrErrors.throwUserError('Token "'..Token1..'" not found.')
 	else
 		line = string.sub(payload, posEnd + 1)
 		--LrDialogs.message('Lookup Airline - after Token 1', line, 'info')
 		posStart, posEnd = string.find(line, Token2)
 		if posStart == nil then
-			LrLogger:error('Token '..Token2..' not found.')
+			log_error('Token '..Token2..' not found.')
 			LrErrors.throwUserError('Token "'..Token2..'" not found.')
 		else
 			line = LrStringUtils.trimWhitespace(string.sub(line, 1, posStart - 1))
