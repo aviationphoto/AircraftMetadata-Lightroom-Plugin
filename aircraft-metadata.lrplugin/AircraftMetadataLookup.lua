@@ -59,6 +59,8 @@ function AircraftMetadataImport()
 				progressScope:done()
 				messageEnd = 'Aircraft Metadata Lookup canceled'
 				log_info('no active photo selection - user canceled run on entire filmstrip')
+			else
+				log_info('no active photo selection - running on entire filmstrip')
 			end
 		end
 
@@ -217,4 +219,4 @@ function extractMetadata(payload, Token1, Token2)
 end
 
 
-import 'LrTasks'.startAsyncTask(AircraftMetadataImport)
+LrTasks.startAsyncTask(AircraftMetadataImport)

@@ -47,6 +47,8 @@ function AircraftUrlUpdate()
 				progressScope:done()
 				messageEnd = 'Aircraft URL Update canceled'
 				log_info('no active photo selection - user canceled run on entire filmstrip')
+			else
+				log_info('no active photo selection - running on entire filmstrip')
 			end
 		end
 
@@ -113,4 +115,4 @@ function AircraftUrlUpdate()
 end
 
 
-import 'LrTasks'.startAsyncTask(AircraftUrlUpdate)
+LrTasks.startAsyncTask(AircraftUrlUpdate)

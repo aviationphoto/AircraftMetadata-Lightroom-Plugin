@@ -28,6 +28,7 @@ LrProgressScope = import 'LrProgressScope'
 LrErrors = import 'LrErrors'
 LrStringUtils = import 'LrStringUtils'
 LrSystemInfo = import 'LrSystemInfo'
+LrTasks = import 'LrTasks'
 LrPrefs = import 'LrPrefs'.prefsForPlugin()
 LrLogger = import 'LrLogger'('AircraftMetadata')
 log_error, log_warn, log_info = LrLogger:quick('error', 'warn', 'info')
