@@ -59,47 +59,54 @@ function AircraftUrlUpdate()
 			LrLogger:info('performing update on '..countSelected..' selected photos')
 			for _, photo in ipairs (selectedPhotos) do
 				countProcessed = countProcessed + 1
-				-- read photo name for logging
-				-- check if we are working on a copy
-				if photo:getFormattedMetadata('copyName') == nil then
-					photoFilename = photo:getFormattedMetadata('fileName')..'          '
+				-- check if user hit cancel in progress bar
+				if progressScope:isCanceled() then
+					messageEnd = 'Aircraft URL Update canceled'
+					LrLogger:info('canceled by user')
+					break
 				else
-					photoFilename = photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
-				end
-				-- check if a registration is set
-				if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
-					-- photo has no url, maybee metadata update failed
-					LrLogger:info(photoFilename..' - skipped: no registration set')
-					countSkipped = countSkipped + 1
-				else
-					-- check if url is set
-					if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url') == nil then
-						-- photo has no registration
-						LrLogger:info(photoFilename..' - skipped: no url set')
+					-- set photo name for logging
+					-- check if we are working on a copy
+					if photo:getFormattedMetadata('copyName') == nil then
+						photoFilename = photo:getFormattedMetadata('fileName')..'          '
+					else
+						photoFilename = photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
+					end
+					-- check if a registration is set
+					if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
+						-- photo has no url, maybee metadata update failed
+						LrLogger:info(photoFilename..' - skipped: no registration set')
 						countSkipped = countSkipped + 1
 					else
-						-- looks good, go on
-						oldURL = photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url')
-						newURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)..LrStringUtils.trimWhitespace(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
-						-- check if we need a update
-						if oldURL == newURL then
-							-- no
-							LrLogger:info(photoFilename..' - '..oldURL..' is fine, no update necessary')
+						-- check if url is set
+						if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url') == nil then
+							-- photo has no registration
+							LrLogger:info(photoFilename..' - skipped: no url set')
+							countSkipped = countSkipped + 1
 						else
-							-- yes
-							catalog:withWriteAccessDo('set aircraft metadata',
-							function()
-								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', newURL)
-							end)
-							LrLogger:info(photoFilename..' - url updated: '..oldURL..' --> '..newURL)
+							-- looks good, go on
+							oldURL = photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url')
+							newURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)..LrStringUtils.trimWhitespace(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
+							-- check if we need a update
+							if oldURL == newURL then
+								-- no
+								LrLogger:info(photoFilename..' - '..oldURL..' is fine, no update necessary')
+							else
+								-- yes
+								catalog:withWriteAccessDo('set aircraft metadata',
+								function()
+									photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', newURL)
+								end)
+								LrLogger:info(photoFilename..' - url updated: '..oldURL..' --> '..newURL)
+							end
 						end
 					end
+					progressScope:setPortionComplete(countProcessed, countSelected)
 				end
-				progressScope:setPortionComplete(countProcessed, countSelected)
 			end
 		end
 		progressScope:done()
-		LrLogger:info('processed '..countProcessed..' photos ('..countSkipped..' skipped)')
+		LrLogger:info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countSkipped..' skipped)')
 		LrDialogs.showBezel(messageEnd)
 		LrLogger:info('>>>> done')
 	end)
