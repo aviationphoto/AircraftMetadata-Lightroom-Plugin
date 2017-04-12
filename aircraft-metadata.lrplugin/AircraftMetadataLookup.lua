@@ -76,8 +76,10 @@ function AircraftMetadataImport()
 				-- check if user hit cancel in progress bar
 				if progressScope:isCanceled() then
 					messageEnd = 'Aircraft Metadata Lookup canceled'
+					LrLogger:info('canceled by user')
+					break
 				else
-					-- read photo name for logging
+					-- set photo name for logging
 					-- check if we are working on a copy
 					if photo:getFormattedMetadata('copyName') == nil then
 						photoFilename = photo:getFormattedMetadata('fileName')..'          '
@@ -165,7 +167,7 @@ function AircraftMetadataImport()
 					progressScope:setPortionComplete(countProcessed, countSelected)
 				end
 			end
-			LrLogger:info('processed '..countProcessed..' photos ('..countLookup..' web lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' without reg)')
+			LrLogger:info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countLookup..' web lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' without reg)')
 			progressScope:done()
 		end
 		LrDialogs.showBezel(messageEnd)
