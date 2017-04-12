@@ -16,74 +16,51 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
-local LrApplication = import 'LrApplication'
-local LrFunctionContext = import 'LrFunctionContext'
-local LrDialogs = import 'LrDialogs'
-local LrFileUtils = import 'LrFileUtils'
-local LrPathUtils = import 'LrPathUtils'
-local LrHttp = import 'LrHttp'
-local LrProgressScope = import 'LrProgressScope'
-local LrErrors = import 'LrErrors'
-local prefs = import 'LrPrefs'.prefsForPlugin()
-
-local AircraftMetadataImport = {}
-
-local logger = import 'LrLogger'('AircraftMetadatLookup')
+require "Utilities"
 
 function AircraftMetadataImport()
 	LrFunctionContext.callWithContext( "Aircraft Metadata Import", function(context)
-		--context:addFailureHandler(function(status, error)
-        --    LrDialogs.message("INTERNAL ERROR Failure Handler", error, "critical")
-		--	progressScope:done()
-     	--end)
 		-- define progress bar
-		local progressScope = LrProgressScope({title = 'Aircraft Metadata Lookup'})
+		progressScope = LrProgressScope({title = 'Aircraft Metadata Lookup'})
 		progressScope:setCancelable(true)
 		-- cleanup if error is thrown
 		context:addCleanupHandler(function()
 			progressScope:done()
 		end)
-		local metadataCache = {}
-		local countSelected = 0
-		local countProcessed = 0
-		local countCacheHit = 0
-		local countLookup = 0
-		local countNoReg = 0
-		local countRegNotFound = 0
-		local messageEnd = 'Aircraft Metadata Lookup finished'
-
-		local flagRegFound = true
-		local flagRun = true
 
 		loadPrefs()
+		startLogger('AircraftMetadataLookup')
 
-		-- check if logging enabled
-		if prefs.prefFlagLogging then
-			logger:enable('logfile')
-			clearLogfile()
-		else
-			logger:disable()
-		end
+		-- initialize variables
+		messageEnd = 'Aircraft Metadata Lookup finished'
+		metadataCache = {}
+		countSelected = 0
+		countProcessed = 0
+		countCacheHit = 0
+		countLookup = 0
+		countNoReg = 0
+		countRegNotFound = 0
+		flagRegFound = true
+		flagRun = true
 
-		logger:info('>>>> running lookup')
-		-- get a reference to the photos within the current catalog
-		local catalog = LrApplication.activeCatalog()
-		local selectedPhotos = catalog:getTargetPhotos()
 		-- create / get keyword
 		catalog:withWriteAccessDo('set keyword',
 		function()
-			keyword = catalog:createKeyword(prefs.prefKeywordRegNotFound, {}, false, nil, true)
+			keywordRegNotFound = catalog:createKeyword(LrPrefs.prefKeywordRegNotFound, {}, false, nil, true)
+			keywordWrongReg = catalog:createKeyword(LrPrefs.prefKeywordWrongReg, {}, false, nil, true)
 		end)
 
 		-- check if user selected at least one photos
 		if catalog:getTargetPhoto() == nil then
-			local dialogAction = LrDialogs.confirm('Aircraft Metadata Lookup', 'No photo selected - run lookup on all photos in filmstrip?', 'Yes', 'No')
+			dialogAction = LrDialogs.confirm('Aircraft Metadata Lookup', 'No photo selected - run lookup on all photos in filmstrip?', 'Yes', 'No')
 			if dialogAction == 'cancel' then
 				-- cleanup if canceled by user
 				flagRun = false
 				progressScope:done()
 				messageEnd = 'Aircraft Metadata Lookup canceled'
-				logger:info('no active photo selection - user canceled run on entire filmstrip')
+				log_info('no active photo selection - user canceled run on entire filmstrip')
+			else
+				log_info('no active photo selection - running on entire filmstrip')
 			end
 		end
 
@@ -93,7 +70,7 @@ function AircraftMetadataImport()
 			for _ in pairs(selectedPhotos) do
 				countSelected = countSelected + 1
 			end
-			logger:info('performing lookup for '..countSelected..' selected photos')
+			log_info('performing lookup for '..countSelected..' selected photos')
 			-- loop through each of the photos
 			for _, photo in ipairs (selectedPhotos) do
 				countProcessed = countProcessed + 1
@@ -101,11 +78,13 @@ function AircraftMetadataImport()
 				-- check if user hit cancel in progress bar
 				if progressScope:isCanceled() then
 					messageEnd = 'Aircraft Metadata Lookup canceled'
+					log_info('canceled by user')
+					break
 				else
-					-- read photo name for logging
+					-- set photo name for logging
 					-- check if we are working on a copy
 					if photo:getFormattedMetadata('copyName') == nil then
-						photoFilename = photo:getFormattedMetadata('fileName')
+						photoFilename = photo:getFormattedMetadata('fileName')..'          '
 					else
 						photoFilename = photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
 					end
@@ -114,55 +93,55 @@ function AircraftMetadataImport()
 					-- do we have a registration?
 					if not (searchRegistration == '' or searchRegistration == nil) then
 						-- yes, photo has registration
-						searchRegistration = string.upper(trim(searchRegistration))
+						searchRegistration = string.upper(LrStringUtils.trimWhitespace(searchRegistration))
 						-- is registration already in cache?
 						if not metadataCache[searchRegistration] then
 							-- no, we need to do a lookup
 							countLookup = countLookup + 1
-							lookupURL = prefs.prefLookupUrl..searchRegistration
-							logger:info(photoFilename..' - looking up registration at '..lookupURL..' for: >>'..searchRegistration..'<<')
+							lookupURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)..searchRegistration
+							log_info(photoFilename..' - looking up registration at '..lookupURL..' for: '..searchRegistration)
 							-- do the lookup
 							content = LrHttp.get(lookupURL)
 							--LrDialogs.message(photoFilename, content, 'info')
 							-- check if lookup returned something usefull
-							if string.find(content, '>Reg:') == nil then
+							if string.find(content, LrPrefs.prefSuccessfulSearch) == nil then
 								-- lookup returned nothing usefull
 								countRegNotFound = countRegNotFound + 1
 								flagRegFound = false
-								logger:info(photoFilename..' - no metadata found for registration >>'..searchRegistration..'<<')
+								log_warn(photoFilename..' - REG NOT FOUND: no metadata found for registration '..searchRegistration)
 								-- mark photo with keyword reg_not_found
 								catalog:withWriteAccessDo('set keyword',
 								function()
-									photo:addKeyword(keyword)
+									photo:addKeyword(keywordRegNotFound)
 								end)
 							else
 								-- lookup returned something usefull
-								foundRegistration = trim(extractMetadata(content, prefs.prefRegistrationToken1, prefs.prefRegistrationToken2))
+								foundRegistration = extractMetadata(content, LrPrefs.prefRegistrationToken1, LrPrefs.prefRegistrationToken2)
 								-- check if lookup returned the right registration
 								if searchRegistration == foundRegistration then
 									-- yes, isolate metadata
-									foundAirline = trim(extractMetadata(content, prefs.prefAirlineToken1, prefs.prefAirlineToken2))
-									foundAircraft = trim(extractMetadata(content, prefs.prefAircraftToken1, prefs.prefAircraftToken2))
-									-- split aircraft info in manufacturer and type
-									foundAircraftManufacturer = trim(extractMetadata(content, prefs.prefManufacturerToken1, prefs.prefManufacturerToken2))
-									-- check if manufacturer is set
-									if foundAircraftManufacturer == '' then
-										foundAircraftManufacturer = 'not set'
-									end
-									foundAircraftType = trim(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
+									foundAirline = extractMetadata(content, LrPrefs.prefAirlineToken1, LrPrefs.prefAirlineToken2)
+									foundAircraft = extractMetadata(content, LrPrefs.prefAircraftToken1, LrPrefs.prefAircraftToken2)
+									foundAircraftManufacturer = extractMetadata(content, LrPrefs.prefManufacturerToken1, LrPrefs.prefManufacturerToken2)
+									foundAircraftType = LrStringUtils.trimWhitespace(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
 									-- cache found metadata
 									metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType, lookupURL = lookupURL}
-									logger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
+									log_info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
 								else
 									-- no, lookup returned wrong registration
-									logger:info(photoFilename..' -  lookup returned wrong registration: >>'..foundRegistration..'<< instead of >>'..searchRegistration..'<<')
+									log_warn(photoFilename..' - WRONG REG: lookup returned wrong registration: '..foundRegistration..' instead of '..searchRegistration)
 									countNoReg = countNoReg + 1
+									flagRegFound = false
 									-- mark photo with keyword wrong_reg
+									catalog:withWriteAccessDo('set keyword',
+									function()
+										photo:addKeyword(keywordWrongReg)
+									end)
 								end
 							end
 						else
 							-- yes, use cached metadata
-							logger:info(photoFilename..' - using cached metadata for: '..metadataCache[searchRegistration].foundRegistration)
+							log_info(photoFilename..' - using cached metadata for: '..metadataCache[searchRegistration].foundRegistration)
 							countCacheHit = countCacheHit + 1
 						end
 						-- check if we have a reg and user did not hit cancel
@@ -170,141 +149,74 @@ function AircraftMetadataImport()
 							-- write metadata to photo
 							catalog:withWriteAccessDo('set aircraft metadata',
 							function()
-								-- check if user allows overwrite of existing registration metadata
-								if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
-									photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
-								else
-									if prefs.prefFlagOverwrite then
-										photo:setPropertyForPlugin(_PLUGIN, 'registration', metadataCache[searchRegistration].foundRegistration)
-									end
-								end
-								-- check if user allows overwrite of existing airline metadata
-								if photo:getPropertyForPlugin(_PLUGIN, 'airline') == nil then
-									photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
-								else
-									if prefs.prefFlagOverwrite then
-										photo:setPropertyForPlugin(_PLUGIN, 'airline', metadataCache[searchRegistration].foundAirline)
-									end
-								end
-								-- check if user allows overwrite of existing manufacturer metadata
-								if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer') == nil then
-									photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
-								else
-									if prefs.prefFlagOverwrite then
-										photo:setPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
-									end
-								end
-								-- check if user allows overwrite of existing type metadata
-								if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_type') == nil then
-									photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
-								else
-									if prefs.prefFlagOverwrite then
-										photo:setPropertyForPlugin(_PLUGIN, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
-									end
-								end
+								writeMetadata(photo, 'registration', metadataCache[searchRegistration].foundRegistration)
+								writeMetadata(photo, 'airline', metadataCache[searchRegistration].foundAirline)
+								writeMetadata(photo, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
+								writeMetadata(photo, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
 								-- set aircraft url - we overwrite this in any case
 								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', metadataCache[searchRegistration].lookupURL)
-								-- remove reg_not_found if set
-								photo:removeKeyword(keyword)
+								-- remove keywords if set
+								photo:removeKeyword(keywordRegNotFound)
+								photo:removeKeyword(keywordWrongReg)
 							end)
 						end
 					else
 						-- photo has no registration
-						logger:info(photoFilename..' - no registration set')
+						log_info(photoFilename..' - no registration set')
 						countNoReg = countNoReg + 1
 					end
 					-- update progress bar
 					progressScope:setPortionComplete(countProcessed, countSelected)
 				end
 			end
-			logger:info('processed '..countProcessed..' photos ('..countLookup..' web lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' without reg)')
+			log_info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countLookup..' web lookups, '..countRegNotFound..' regs not found, '..countCacheHit..' cache hits, '..countNoReg..' without reg)')
 			progressScope:done()
 		end
 		LrDialogs.showBezel(messageEnd)
-		logger:info('>>>> lookup done')
+		log_info('>>>> done')
 	end)
 end
 
+------- writeMetadata() -------------------------------------------------------
+-- write metadata to db fields
+function writeMetadata(photo, fieldName, fieldValue)
+	-- check if field is empty
+	if photo:getPropertyForPlugin(_PLUGIN, fieldName) == nil then
+		-- yes, write to empty field
+		photo:setPropertyForPlugin(_PLUGIN, fieldName, fieldValue)
+	else
+		-- check if user allows overwrite of existing metadata
+		if LrPrefs.prefFlagOverwrite then
+			-- yes, overwrite existing entry
+			photo:setPropertyForPlugin(_PLUGIN, fieldName, fieldValue)
+		end
+	end
+end
 
-
+------- extractMetadata() -----------------------------------------------------
 -- isolate metadata - sorry, creepy html parsing, no fancy things like JSON available
 function extractMetadata(payload, Token1, Token2)
-	local posStart, posEnd = string.find(payload, Token1)
+	posStart, posEnd = string.find(payload, Token1)
 	if posEnd == nil then
+		log_error('Token '..Token1..' not found.')
 		LrErrors.throwUserError('Token "'..Token1..'" not found.')
 	else
-		local line = string.sub(payload, posEnd + 1)
+		line = string.sub(payload, posEnd + 1)
 		--LrDialogs.message('Lookup Airline - after Token 1', line, 'info')
 		posStart, posEnd = string.find(line, Token2)
 		if posStart == nil then
+			log_error('Token '..Token2..' not found.')
 			LrErrors.throwUserError('Token "'..Token2..'" not found.')
 		else
-			line = string.sub(line, 1, posStart - 1)
+			line = LrStringUtils.trimWhitespace(string.sub(line, 1, posStart - 1))
 			--LrDialogs.message('Lookup Airline - after Token 2', line, 'info')
+			if line == '' then
+				line = 'not set'
+			end
 			return line
 		end
 	end
 end
 
--- remove trailing and leading whitespace from string
-function trim(s)
-  return (s:gsub('^%s*(.-)%s*$', '%1'))
-end
 
--- clear old logfile
-function clearLogfile()
-	local logPath = LrPathUtils.child(LrPathUtils.getStandardFilePath('documents'), 'AircraftMetadatLookup.log')
-		if LrFileUtils.exists( logPath ) then
-			success, reason = LrFileUtils.delete( logPath )
-			if not success then
-				logger:error('error deleting existing logfile!'..reason)
-			end
-	end
-end
-
--- load saved preferences
-function loadPrefs()
-	-- lookup KeywordRegNotFound
-	if (prefs.prefKeywordRegNotFound == nil or prefs.prefKeywordRegNotFound == '') then
-		LrErrors.throwUserError('Please set KeywordRegNotFound')
-	end
-	-- lookup URL
-	if (prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '') then
-		LrErrors.throwUserError('Please set URL for lookup')
-	end
-	-- lookup RegistrationToken1
-	if (prefs.prefRegistrationToken1 == nil or prefs.prefRegistrationToken1 == '') then
-		LrErrors.throwUserError('Please set registration token 1')
-	end
-	-- lookup RegistrationToken2
-	if (prefs.prefRegistrationToken2 == nil or prefs.prefRegistrationToken2 == '') then
-		LrErrors.throwUserError('Please set registration token 2')
-	end
-	-- lookup AirlineToken1
-	if (prefs.prefAirlineToken1 == nil or prefs.prefAirlineToken1 == '') then
-		LrErrors.throwUserError('Please set airline token 1')
-	end
-	-- lookup AirlineToken2
-	if (prefs.prefAirlineToken2 == nil or prefs.prefAirlineToken2 == '') then
-		LrErrors.throwUserError('Please set airline token 2')
-	end
-	-- lookup AircraftToken1
-	if (prefs.prefAircraftToken1 == nil or prefs.prefAircraftToken1 == '') then
-		LrErrors.throwUserError('Please set aircraft token 1')
-	end
-	-- lookup AircraftToken2
-	if (prefs.prefAircraftToken2 == nil or prefs.prefAircraftToken2 == '') then
-		LrErrors.throwUserError('Please set aircraft token 2')
-	end
-	-- lookup ManufacturerToken1
-	if (prefs.prefManufacturerToken1 == nil or prefs.prefManufacturerToken1 == '') then
-		LrErrors.throwUserError('Please set manufacturer token 1')
-	end
-	-- lookup ManufacturerToken2
-	if (prefs.prefManufacturerToken2 == nil or prefs.prefManufacturerToken2 == '') then
-		LrErrors.throwUserError('Please set manufacturer token 2')
-	end
-end
-
-
-import 'LrTasks'.startAsyncTask(AircraftMetadataImport)
+LrTasks.startAsyncTask(AircraftMetadataImport)
