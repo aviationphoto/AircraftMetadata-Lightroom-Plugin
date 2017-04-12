@@ -40,9 +40,9 @@ function startLogger(functionName)
 	if LrPrefs.prefFlagLogging then
 		LrLogger:enable('logfile')
 		-- clear old logfile
-		logPath = LrPathUtils.child(LrPathUtils.getStandardFilePath('documents'), 'AircraftMetadata.log')
+		local logPath = LrPathUtils.child(LrPathUtils.getStandardFilePath('documents'), 'AircraftMetadata.log')
 		if LrFileUtils.exists( logPath ) then
-			success, reason = LrFileUtils.delete( logPath )
+			local success, reason = LrFileUtils.delete( logPath )
 			if not success then
 				log_error('error deleting existing logfile!'..reason)
 			end
