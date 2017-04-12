@@ -28,15 +28,18 @@ function AircraftUrlUpdate()
 			progressScope:done()
 		end)
 
+		local catalog = LrApplication.activeCatalog()
+		local selectedPhotos = catalog:getTargetPhotos()
+
 		loadPrefs()
 		startLogger('AircraftUrlUpdate')
 
 		-- initialize variables
-		messageEnd = 'Aircraft URL Update finished'
-		countSelected = 0
-		countProcessed = 0
-		countSkipped = 0
-		flagRun = true
+		local messageEnd = 'Aircraft URL Update finished'
+		local countSelected = 0
+		local countProcessed = 0
+		local countSkipped = 0
+		local flagRun = true
 
 		-- check if user selected at least one photos
 		if catalog:getTargetPhoto() == nil then

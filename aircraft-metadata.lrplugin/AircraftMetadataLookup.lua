@@ -28,20 +28,23 @@ function AircraftMetadataImport()
 			progressScope:done()
 		end)
 
+		local catalog = LrApplication.activeCatalog()
+		local selectedPhotos = catalog:getTargetPhotos()
+
 		loadPrefs()
 		startLogger('AircraftMetadataLookup')
 
 		-- initialize variables
-		messageEnd = 'Aircraft Metadata Lookup finished'
-		metadataCache = {}
-		countSelected = 0
-		countProcessed = 0
-		countCacheHit = 0
-		countLookup = 0
-		countNoReg = 0
-		countRegNotFound = 0
-		flagRegFound = true
-		flagRun = true
+		local messageEnd = 'Aircraft Metadata Lookup finished'
+		local metadataCache = {}
+		local countSelected = 0
+		local countProcessed = 0
+		local countCacheHit = 0
+		local countLookup = 0
+		local countNoReg = 0
+		local countRegNotFound = 0
+		local flagRegFound = true
+		local flagRun = true
 
 		-- create / get keyword
 		catalog:withWriteAccessDo('set keyword',
