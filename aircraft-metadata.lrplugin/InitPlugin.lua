@@ -24,10 +24,10 @@ if prefs.prefFlagOverwrite == nil then
 	prefs.prefFlagOverwrite = false
 end
 if prefs.prefKeywordRegNotFound == nil or prefs.prefKeywordRegNotFound == '' then
-	prefs.prefKeywordRegNotFound = 'RegNotFound'
+	prefs.prefKeywordRegNotFound = 'AircraftMetadata-RegNotFound'
 end
 if prefs.prefKeywordWrongReg == nil or prefs.prefKeywordWrongReg == '' then
-	prefs.prefKeywordWrongReg = 'WronReg'
+	prefs.prefKeywordWrongReg = 'AircraftMetadata-WrongReg'
 end
 if prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '' then
 	prefs.prefLookupUrl = 'https://www.jetphotos.com/showphotos.php?regsearch='
