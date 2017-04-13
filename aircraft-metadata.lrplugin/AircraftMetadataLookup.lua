@@ -30,6 +30,7 @@ function AircraftMetadataImport()
 	local selectedPhotos = catalog:getTargetPhotos()
 	local messageEnd = 'Aircraft Metadata Lookup finished'
 	local metadataCache = {}
+	local regNotFoundCache = {}
 	local countSelected = 0
 	local countProcessed = 0
 	local countCacheHit = 0
@@ -101,55 +102,70 @@ function AircraftMetadataImport()
 					if not (searchRegistration == '' or searchRegistration == nil) then
 						-- yes, photo has registration
 						searchRegistration = string.upper(LrStringUtils.trimWhitespace(searchRegistration))
-						-- is registration already in cache?
-						if not metadataCache[searchRegistration] then
-							-- no, we need to do a lookup
-							countLookup = countLookup + 1
-							lookupURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)..searchRegistration
-							LrLogger:info(photoFilename..' - looking up registration at '..lookupURL..' for: '..searchRegistration)
-							-- do the lookup
-							content = LrHttp.get(lookupURL)
-							--LrDialogs.message(photoFilename, content, 'info')
-							-- check if lookup returned something usefull
-							if string.find(content, LrPrefs.prefSuccessfulSearch) == nil then
-								-- lookup returned nothing usefull
-								countRegNotFound = countRegNotFound + 1
-								flagRegFound = false
-								LrLogger:warn(photoFilename..' - REG NOT FOUND: no metadata found for registration '..searchRegistration)
-								-- mark photo with keyword reg_not_found
-								catalog:withWriteAccessDo('set keyword',
-								function()
-									photo:addKeyword(keywordRegNotFound)
-								end)
-							else
-								-- lookup returned something usefull
-								foundRegistration = extractMetadata(content, LrPrefs.prefRegistrationToken1, LrPrefs.prefRegistrationToken2)
-								-- check if lookup returned the right registration
-								if searchRegistration == foundRegistration then
-									-- yes, isolate metadata
-									foundAirline = extractMetadata(content, LrPrefs.prefAirlineToken1, LrPrefs.prefAirlineToken2)
-									foundAircraft = extractMetadata(content, LrPrefs.prefAircraftToken1, LrPrefs.prefAircraftToken2)
-									foundAircraftManufacturer = extractMetadata(content, LrPrefs.prefManufacturerToken1, LrPrefs.prefManufacturerToken2)
-									foundAircraftType = LrStringUtils.trimWhitespace(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
-									-- cache found metadata
-									metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType, lookupURL = lookupURL}
-									LrLogger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
-								else
-									-- no, lookup returned wrong registration
-									LrLogger:warn(photoFilename..' - WRONG REG: lookup returned wrong registration: '..foundRegistration..' instead of '..searchRegistration)
-									countNoReg = countNoReg + 1
+						-- check if a previous lookup returnded a error for this registration
+						if not regNotFoundCache[searchRegistration] then
+							-- no, check if registration is already in cache
+							if not metadataCache[searchRegistration] then
+								-- no, we need to do a lookup
+								countLookup = countLookup + 1
+								lookupURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)..searchRegistration
+								LrLogger:info(photoFilename..' - looking up registration at '..lookupURL..' for: '..searchRegistration)
+								-- do the lookup
+								content = LrHttp.get(lookupURL)
+								--LrDialogs.message(photoFilename, content, 'info')
+								-- check if lookup returned something useful
+								if string.find(content, LrPrefs.prefSuccessfulSearch) == nil then
+									-- lookup returned nothing useful
+									countRegNotFound = countRegNotFound + 1
 									flagRegFound = false
-									-- mark photo with keyword wrong_reg
+									LrLogger:warn(photoFilename..' - REG NOT FOUND: no metadata found for registration '..searchRegistration)
+									-- mark photo with keyword reg_not_found
 									catalog:withWriteAccessDo('set keyword',
 									function()
-										photo:addKeyword(keywordWrongReg)
+										photo:addKeyword(keywordRegNotFound)
 									end)
+									-- cache registration to prevent further lookups
+									regNotFoundCache[searchRegistration] = {searchRegistration = searchRegistration}
+								else
+									-- yes, lookup returned something useful
+									foundRegistration = extractMetadata(content, LrPrefs.prefRegistrationToken1, LrPrefs.prefRegistrationToken2)
+									-- check if lookup returned the right registration
+									if searchRegistration == foundRegistration then
+										-- yes, isolate metadata
+										foundAirline = extractMetadata(content, LrPrefs.prefAirlineToken1, LrPrefs.prefAirlineToken2)
+										foundAircraft = extractMetadata(content, LrPrefs.prefAircraftToken1, LrPrefs.prefAircraftToken2)
+										foundAircraftManufacturer = extractMetadata(content, LrPrefs.prefManufacturerToken1, LrPrefs.prefManufacturerToken2)
+										foundAircraftType = LrStringUtils.trimWhitespace(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
+										-- cache found metadata
+										metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType, lookupURL = lookupURL}
+										LrLogger:info(photoFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
+									else
+										-- no, lookup returned wrong registration
+										LrLogger:warn(photoFilename..' - WRONG REG: lookup returned wrong registration: '..foundRegistration..' instead of '..searchRegistration)
+										countNoReg = countNoReg + 1
+										flagRegFound = false
+										-- mark photo with keyword wrong_reg
+										catalog:withWriteAccessDo('set keyword',
+										function()
+											photo:addKeyword(keywordWrongReg)
+										end)
+									end
 								end
+							else
+								-- yes, use cached metadata
+								LrLogger:info(photoFilename..' - using cached metadata for: '..metadataCache[searchRegistration].foundRegistration)
+								countCacheHit = countCacheHit + 1
 							end
 						else
-							-- yes, use cached metadata
-							LrLogger:info(photoFilename..' - using cached metadata for: '..metadataCache[searchRegistration].foundRegistration)
-							countCacheHit = countCacheHit + 1
+							-- yes, a previous lookup returned nothing useful
+							countRegNotFound = countRegNotFound + 1
+							flagRegFound = false
+							LrLogger:warn(photoFilename..' - REG NOT FOUND: lookup skipped for registration '..searchRegistration..' (a previous lookup returned noting useful)')
+							-- mark photo with keyword reg_not_found
+							catalog:withWriteAccessDo('set keyword',
+							function()
+								photo:addKeyword(keywordRegNotFound)
+							end)
 						end
 						-- check if we have a reg and user did not hit cancel
 						if flagRegFound and not progressScope:isCanceled()then
