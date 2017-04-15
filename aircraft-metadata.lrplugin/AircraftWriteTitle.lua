@@ -108,7 +108,7 @@ function AircraftWriteTitle()
 									photo:setRawMetadata('title', newText)
 								end
 							)
-							LrLogger:info(photoFilename..' - title updated: '..newText..' --> '..newText)
+							LrLogger:info(photoFilename..' - title updated: '..newText)
 						end
 					end
 					progressScope:setPortionComplete(countProcessed, countSelected)
