@@ -41,6 +41,10 @@ return {
 			title = 'Update Aircraft URL',
 			file = 'AircraftUrlUpdate.lua',
 		},
+		{
+			title = 'Write Aircraft Metadata to Title',
+			file = 'AircraftWriteTitle.lua',
+		},
 	},
 	--show in library menu
 	LrLibraryMenuItems = {
@@ -51,6 +55,10 @@ return {
 		{
 			title = 'Update Aircraft URL',
 			file = 'AircraftUrlUpdate.lua',
+		},
+		{
+			title = 'Write Aircraft Metadata to Title',
+			file = 'AircraftWriteTitle.lua',
 		},
 	},
 
