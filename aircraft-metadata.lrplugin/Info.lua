@@ -24,7 +24,7 @@ return {
 	LrToolkitIdentifier = 'ch.aviationphoto.aircraftmetadata',
 
 	LrMetadataProvider = 'MetadataProvider.lua',
-	LrMetadataTagsetFactory = {'MetadataTagset.lua', 'MetadataTagsetExtended.lua',},
+	LrMetadataTagsetFactory = {'MetadataTagsetBasic.lua', 'MetadataTagsetExtended.lua',},
 	LrPluginInfoProvider = 'PluginInfoProvider.lua',
 	LrInitPlugin  = 'InitPlugin.lua',
 	--LrShutdownPlugin = 'ShutdownPlugin.lua',
