@@ -18,13 +18,13 @@ along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 return {
 	LrSdkVersion = 6.0,
-	VERSION = {major=1, minor=3, revision=2,},
+	VERSION = {major=1, minor=4, revision=1,},
 
 	LrPluginName = 'Aircraft Metadata',
 	LrToolkitIdentifier = 'ch.aviationphoto.aircraftmetadata',
 
 	LrMetadataProvider = 'MetadataProvider.lua',
-	LrMetadataTagsetFactory = 'MetadataTagset.lua',
+	LrMetadataTagsetFactory = {'MetadataTagsetBasic.lua', 'MetadataTagsetExtended.lua',},
 	LrPluginInfoProvider = 'PluginInfoProvider.lua',
 	LrInitPlugin  = 'InitPlugin.lua',
 	--LrShutdownPlugin = 'ShutdownPlugin.lua',
@@ -41,6 +41,10 @@ return {
 			title = 'Update Aircraft URL',
 			file = 'AircraftUrlUpdate.lua',
 		},
+		{
+			title = 'Write Aircraft Metadata to Title',
+			file = 'AircraftWriteTitle.lua',
+		},
 	},
 	--show in library menu
 	LrLibraryMenuItems = {
@@ -51,6 +55,10 @@ return {
 		{
 			title = 'Update Aircraft URL',
 			file = 'AircraftUrlUpdate.lua',
+		},
+		{
+			title = 'Write Aircraft Metadata to Title',
+			file = 'AircraftWriteTitle.lua',
 		},
 	},
 

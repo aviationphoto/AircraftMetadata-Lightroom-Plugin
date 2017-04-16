@@ -1,5 +1,5 @@
 --[[----------------------------------------------------------------------------
-AircraftUrlUpdate.lua
+AircraftWriteTitle.lua
 This file is part of LR Aircraft Metadata.
 Copyright(c) 2017, aviationphoto
 
@@ -18,27 +18,27 @@ along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 require "Utilities"
 
-local AircraftUrlUpdate = {}
+local AircraftWriteTitle = {}
 
-function AircraftUrlUpdate()
+function AircraftWriteTitle()
 
-	startLogger('AircraftUrlUpdate')
+	startLogger('AircraftWriteTitle')
 	loadPrefs()
 
 	-- initialize variables
 	local catalog = LrApplication.activeCatalog()
 	local selectedPhotos = catalog:getTargetPhotos()
-	local messageEnd = 'Aircraft URL Update finished'
+	local messageEnd = 'Aircraft Create Title finished'
 	local countSelected = 0
 	local countProcessed = 0
 	local countSkipped = 0
-	local countRemoved = 0
 	local flagRun = true
-	local progressScope, dialogAction, photo, photoLogFilename, oldURL, newURL
+	local progressScope, dialogAction, photo, photoLogFilename, oldText, newText
+	local textRegistration, textAirline, textAircraftManufacturer, textAircraftType
 
-	LrFunctionContext.callWithContext( "Aircraft Metadata Import", function(context)
+	LrFunctionContext.callWithContext("Aircraft Create Title", function(context)
 		-- define progress bar
-		progressScope = LrProgressScope({title = 'uptating Aircraft URL'})
+		progressScope = LrProgressScope({title = 'writing Aircraft Metadata to Title'})
 		progressScope:setCancelable(true)
 		-- cleanup if error is thrown
 		context:addCleanupHandler(function()
@@ -47,11 +47,11 @@ function AircraftUrlUpdate()
 
 		-- check if user selected at least one photos
 		if catalog:getTargetPhoto() == nil then
-			dialogAction = LrDialogs.confirm('Aircraft URL Update', 'No photo selected - run update on all photos in filmstrip?', 'Yes', 'No')
+			dialogAction = LrDialogs.confirm('Write Aircraft Metadata to Title', 'No photo selected - run update on all photos in filmstrip?', 'Yes', 'No')
 			if dialogAction == 'cancel' then
 				-- cleanup if canceled by user
 				flagRun = false
-				messageEnd = 'Aircraft URL Update canceled'
+				messageEnd = 'Write Aircraft Metadata to Title canceled'
 				LrLogger:info('no active photo selection - user canceled run on entire filmstrip')
 			else
 				LrLogger:info('no active photo selection - running on entire filmstrip')
@@ -69,51 +69,38 @@ function AircraftUrlUpdate()
 				countProcessed = countProcessed + 1
 				-- check if user hit cancel in progress bar
 				if progressScope:isCanceled() then
-					messageEnd = 'Aircraft URL Update canceled'
+					messageEnd = 'Aircraft Create Title canceled'
 					LrLogger:info('canceled by user')
 					break
 				else
 					-- set photo name for logging
 					photoLogFilename = setPhotoLogFilename(photo)
 					-- check if a registration is set
-					if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil or photo:getPropertyForPlugin(_PLUGIN, 'registration') == '' then
+					if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
 						-- photo has no registration
-						-- check if url is set
-						if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url') == nil then
-							-- no, skip
-							LrLogger:info(photoLogFilename..' - skipped: no registration set')
-							countSkipped = countSkipped + 1
-						else
-							-- yes, remove url
-							countRemoved = countRemoved + 1
-							catalog:withWriteAccessDo('set aircraft metadata',
-							function()
-								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', nil)
-							end)
-							LrLogger:info(photoLogFilename..' - removed: no registration set')
-						end
+						LrLogger:info(photoLogFilename..' - skipped: no registration set')
+						countSkipped = countSkipped + 1
 					else
-						-- check if url is set
-						if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url') == nil then
-							-- photo has no registration
-							LrLogger:info(photoLogFilename..' - skipped: no url set')
-							countSkipped = countSkipped + 1
+						-- get old text
+						oldText = photo:getFormattedMetadata('title')
+						-- create new text
+						newText = addToText(photo, '', 'registration', '')
+						newText = addToText(photo, newText, 'airline', ' | ')
+						newText = addToText(photo, newText, 'aircraft_manufacturer', ' | ')
+						newText = addToText(photo, newText, 'aircraft_type', ' ')
+
+						-- check if we need a update
+						if oldText == newText then
+							-- no
+							LrLogger:info(photoLogFilename..' - '..oldText..' is fine, no update necessary')
 						else
-							-- looks good, go on
-							oldURL = photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url')
-							newURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)..LrStringUtils.trimWhitespace(photo:getPropertyForPlugin(_PLUGIN, 'registration'))
-							-- check if we need a update
-							if oldURL == newURL then
-								-- no
-								LrLogger:info(photoLogFilename..' - '..oldURL..' is fine, no update necessary')
-							else
-								-- yes
-								catalog:withWriteAccessDo('set aircraft metadata',
+							-- yes
+							catalog:withWriteAccessDo('set aircraft title',
 								function()
-									photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', newURL)
-								end)
-								LrLogger:info(photoLogFilename..' - url updated: '..oldURL..' --> '..newURL)
-							end
+									photo:setRawMetadata('title', newText)
+								end
+							)
+							LrLogger:info(photoLogFilename..' - title updated: '..newText)
 						end
 					end
 					progressScope:setPortionComplete(countProcessed, countSelected)
@@ -121,11 +108,32 @@ function AircraftUrlUpdate()
 			end
 		end
 		progressScope:done()
-		LrLogger:info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countSkipped..' skipped, '..countRemoved..' URL removed)')
+		LrLogger:info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countSkipped..' skipped)')
 		LrDialogs.showBezel(messageEnd)
 		LrLogger:info('>>>> done')
 	end)
 end
 
+------- writeMetadata() -------------------------------------------------------
+-- read metadata and add it to text
+function addToText(photo, stringInput, fieldName, stringSeperator)
+	local stringOutput = ''
+	local fieldValue = photo:getPropertyForPlugin(_PLUGIN, fieldName)
+	-- check if metadata is nil
+	if fieldValue == nil then
+		-- yes, return input
+		return stringInput
+	else
+		-- no, check if some useful metadata is set
+		fieldValue = LrStringUtils.trimWhitespace(fieldValue)
+		if fieldValue == '' or fieldValue == 'not set' then
+			-- no, return input
+			return stringInput
+		else
+			-- yes create & return output
+			return stringInput..stringSeperator..fieldValue
+		end
+	end
+end
 
-LrTasks.startAsyncTask(AircraftUrlUpdate)
+LrTasks.startAsyncTask(AircraftWriteTitle)
