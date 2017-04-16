@@ -22,8 +22,8 @@ local AircraftUrlUpdate = {}
 
 function AircraftUrlUpdate()
 
-	loadPrefs()
 	startLogger('AircraftUrlUpdate')
+	loadPrefs()
 
 	-- initialize variables
 	local catalog = LrApplication.activeCatalog()

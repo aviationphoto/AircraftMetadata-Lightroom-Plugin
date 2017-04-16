@@ -22,8 +22,8 @@ local AircraftWriteTitle = {}
 
 function AircraftWriteTitle()
 
-	loadPrefs()
 	startLogger('AircraftWriteTitle')
+	loadPrefs()
 
 	-- initialize variables
 	local catalog = LrApplication.activeCatalog()

@@ -22,8 +22,8 @@ local AircraftMetadataImport = {}
 
 function AircraftMetadataImport()
 
-	loadPrefs()
 	startLogger('AircraftMetadataLookup')
+	loadPrefs()
 
 	-- initialize variables
 	local catalog = LrApplication.activeCatalog()
