@@ -32,6 +32,7 @@ function AircraftUrlUpdate()
 	local countSelected = 0
 	local countProcessed = 0
 	local countSkipped = 0
+	local countRemoved = 0
 	local flagRun = true
 	local progressScope, dialogAction, photo, photoLogFilename, oldURL, newURL
 
@@ -50,7 +51,6 @@ function AircraftUrlUpdate()
 			if dialogAction == 'cancel' then
 				-- cleanup if canceled by user
 				flagRun = false
-				progressScope:done()
 				messageEnd = 'Aircraft URL Update canceled'
 				LrLogger:info('no active photo selection - user canceled run on entire filmstrip')
 			else
@@ -76,10 +76,22 @@ function AircraftUrlUpdate()
 					-- set photo name for logging
 					photoLogFilename = setPhotoLogFilename(photo)
 					-- check if a registration is set
-					if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
-						-- photo has no url, maybee metadata update failed
-						LrLogger:info(photoLogFilename..' - skipped: no registration set')
-						countSkipped = countSkipped + 1
+					if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil or photo:getPropertyForPlugin(_PLUGIN, 'registration') == '' then
+						-- photo has no registration
+						-- check if url is set
+						if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url') == nil then
+							-- no, skip
+							LrLogger:info(photoLogFilename..' - skipped: no registration set')
+							countSkipped = countSkipped + 1
+						else
+							-- yes, remove url
+							countRemoved = countRemoved + 1
+							catalog:withWriteAccessDo('set aircraft metadata',
+							function()
+								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', nil)
+							end)
+							LrLogger:info(photoLogFilename..' - removed: no registration set')
+						end
 					else
 						-- check if url is set
 						if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url') == nil then
@@ -109,7 +121,7 @@ function AircraftUrlUpdate()
 			end
 		end
 		progressScope:done()
-		LrLogger:info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countSkipped..' skipped)')
+		LrLogger:info('processed '..countProcessed..' of '..countSelected..' selected photos ('..countSkipped..' skipped, '..countRemoved..' URL removed)')
 		LrDialogs.showBezel(messageEnd)
 		LrLogger:info('>>>> done')
 	end)
