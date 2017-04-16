@@ -77,7 +77,7 @@ function AircraftWriteTitle()
 					photoLogFilename = setPhotoLogFilename(photo)
 					-- check if a registration is set
 					if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
-						-- photo has no url
+						-- photo has no registration
 						LrLogger:info(photoLogFilename..' - skipped: no registration set')
 						countSkipped = countSkipped + 1
 					else
