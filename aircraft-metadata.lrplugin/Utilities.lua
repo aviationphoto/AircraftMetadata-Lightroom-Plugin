@@ -54,7 +54,7 @@ function startLogger(functionName)
 	LrLogger:info('Lightroom version: '..LrApplication.versionString()..' on '..LrSystemInfo.summaryString())
 end
 
-------- startLogger() --------------------------------------------------------
+------- setPhotoLogFilename() ------------------------------------------------
 -- set photo filename for logging
 function setPhotoLogFilename(photo)
 	-- set photo name for logging
