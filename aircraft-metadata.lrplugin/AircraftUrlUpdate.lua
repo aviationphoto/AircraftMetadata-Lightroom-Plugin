@@ -33,7 +33,7 @@ function AircraftUrlUpdate()
 	local countProcessed = 0
 	local countSkipped = 0
 	local flagRun = true
-	local progressScope, dialogAction, photo, photoFilename, oldURL, newURL
+	local progressScope, dialogAction, photo, photoLogFilename, oldURL, newURL
 
 	LrFunctionContext.callWithContext( "Aircraft Metadata Import", function(context)
 		-- define progress bar
@@ -74,22 +74,17 @@ function AircraftUrlUpdate()
 					break
 				else
 					-- set photo name for logging
-					-- check if we are working on a copy
-					if photo:getFormattedMetadata('copyName') == nil then
-						photoFilename = photo:getFormattedMetadata('fileName')..'          '
-					else
-						photoFilename = photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
-					end
+					photoLogFilename = setPhotoLogFilename(photo)
 					-- check if a registration is set
 					if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
 						-- photo has no url, maybee metadata update failed
-						LrLogger:info(photoFilename..' - skipped: no registration set')
+						LrLogger:info(photoLogFilename..' - skipped: no registration set')
 						countSkipped = countSkipped + 1
 					else
 						-- check if url is set
 						if photo:getPropertyForPlugin(_PLUGIN, 'aircraft_url') == nil then
 							-- photo has no registration
-							LrLogger:info(photoFilename..' - skipped: no url set')
+							LrLogger:info(photoLogFilename..' - skipped: no url set')
 							countSkipped = countSkipped + 1
 						else
 							-- looks good, go on
@@ -98,14 +93,14 @@ function AircraftUrlUpdate()
 							-- check if we need a update
 							if oldURL == newURL then
 								-- no
-								LrLogger:info(photoFilename..' - '..oldURL..' is fine, no update necessary')
+								LrLogger:info(photoLogFilename..' - '..oldURL..' is fine, no update necessary')
 							else
 								-- yes
 								catalog:withWriteAccessDo('set aircraft metadata',
 								function()
 									photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', newURL)
 								end)
-								LrLogger:info(photoFilename..' - url updated: '..oldURL..' --> '..newURL)
+								LrLogger:info(photoLogFilename..' - url updated: '..oldURL..' --> '..newURL)
 							end
 						end
 					end

@@ -54,6 +54,20 @@ function startLogger(functionName)
 	LrLogger:info('Lightroom version: '..LrApplication.versionString()..' on '..LrSystemInfo.summaryString())
 end
 
+------- startLogger() --------------------------------------------------------
+-- set photo filename for logging
+function setPhotoLogFilename(photo)
+	-- set photo name for logging
+	-- check if we are working on a copy
+	if photo:getFormattedMetadata('copyName') == nil then
+		-- no, return filename only
+		return photo:getFormattedMetadata('fileName')..'          '
+	else
+		-- yes, return filename & copy
+		return photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
+	end
+end
+
 ------- loadPrefs() -----------------------------------------------------------
 -- load saved preferences
 function loadPrefs()

@@ -33,7 +33,7 @@ function AircraftWriteTitle()
 	local countProcessed = 0
 	local countSkipped = 0
 	local flagRun = true
-	local progressScope, dialogAction, photo, photoFilename, oldText, newText
+	local progressScope, dialogAction, photo, photoLogFilename, oldText, newText
 	local textRegistration, textAirline, textAircraftManufacturer, textAircraftType
 
 	LrFunctionContext.callWithContext("Aircraft Create Title", function(context)
@@ -74,16 +74,11 @@ function AircraftWriteTitle()
 					break
 				else
 					-- set photo name for logging
-					-- check if we are working on a copy
-					if photo:getFormattedMetadata('copyName') == nil then
-						photoFilename = photo:getFormattedMetadata('fileName')..'          '
-					else
-						photoFilename = photo:getFormattedMetadata('fileName')..' ('..photo:getFormattedMetadata('copyName')..')'
-					end
+					photoLogFilename = setPhotoLogFilename(photo)
 					-- check if a registration is set
 					if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
 						-- photo has no url
-						LrLogger:info(photoFilename..' - skipped: no registration set')
+						LrLogger:info(photoLogFilename..' - skipped: no registration set')
 						countSkipped = countSkipped + 1
 					else
 						-- get old text
@@ -97,7 +92,7 @@ function AircraftWriteTitle()
 						-- check if we need a update
 						if oldText == newText then
 							-- no
-							LrLogger:info(photoFilename..' - '..oldText..' is fine, no update necessary')
+							LrLogger:info(photoLogFilename..' - '..oldText..' is fine, no update necessary')
 						else
 							-- yes
 							catalog:withWriteAccessDo('set aircraft title',
@@ -105,7 +100,7 @@ function AircraftWriteTitle()
 									photo:setRawMetadata('title', newText)
 								end
 							)
-							LrLogger:info(photoFilename..' - title updated: '..newText)
+							LrLogger:info(photoLogFilename..' - title updated: '..newText)
 						end
 					end
 					progressScope:setPortionComplete(countProcessed, countSelected)
@@ -129,8 +124,8 @@ function addToText(photo, stringInput, fieldName, stringSeperator)
 		-- yes, return input
 		return stringInput
 	else
+		-- no, check if some useful metadata is set
 		fieldValue = LrStringUtils.trimWhitespace(fieldValue)
-		-- no, check if metadata is set
 		if fieldValue == '' or fieldValue == 'not set' then
 			-- no, return input
 			return stringInput
