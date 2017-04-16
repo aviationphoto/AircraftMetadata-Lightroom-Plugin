@@ -37,7 +37,7 @@ function AircraftUrlUpdate()
 
 	LrFunctionContext.callWithContext( "Aircraft Metadata Import", function(context)
 		-- define progress bar
-		progressScope = LrProgressScope({title = 'Aircraft URL Update'})
+		progressScope = LrProgressScope({title = 'uptating Aircraft URL'})
 		progressScope:setCancelable(true)
 		-- cleanup if error is thrown
 		context:addCleanupHandler(function()

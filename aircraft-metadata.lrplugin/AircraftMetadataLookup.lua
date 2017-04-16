@@ -44,7 +44,7 @@ function AircraftMetadataImport()
 
 	LrFunctionContext.callWithContext( "Aircraft Metadata Import", function(context)
 		-- define progress bar
-		progressScope = LrProgressScope({title = 'Aircraft Metadata Lookup'})
+		progressScope = LrProgressScope({title = 'looking up Aircraft Metadata'})
 		progressScope:setCancelable(true)
 		-- cleanup if error is thrown
 		context:addCleanupHandler(function()
