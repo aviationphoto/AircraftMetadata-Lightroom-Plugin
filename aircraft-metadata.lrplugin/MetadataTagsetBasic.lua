@@ -1,5 +1,5 @@
 --[[----------------------------------------------------------------------------
-MetadataTagset.lua
+MetadataTagsetBasic.lua
 This file is part of LR Aircraft Metadata.
 Copyright(c) 2017, aviationphoto
 
@@ -18,7 +18,7 @@ along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 return {
 	title = 'Aircraft Metadata',
-	id = 'ch.aviationphoto.aircraftmetadatatagset',
+	id = 'ch.aviationphoto.aircraftmetadatatagset.basic',
 
 	items = {
 		--{formatter = 'com.adobe.title', height_in_lines=3},
