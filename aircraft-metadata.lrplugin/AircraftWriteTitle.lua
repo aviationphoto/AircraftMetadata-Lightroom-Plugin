@@ -51,7 +51,6 @@ function AircraftWriteTitle()
 			if dialogAction == 'cancel' then
 				-- cleanup if canceled by user
 				flagRun = false
-				progressScope:done()
 				messageEnd = 'Aircraft Create Title canceled'
 				LrLogger:info('no active photo selection - user canceled run on entire filmstrip')
 			else
@@ -83,19 +82,17 @@ function AircraftWriteTitle()
 					end
 					-- check if a registration is set
 					if photo:getPropertyForPlugin(_PLUGIN, 'registration') == nil then
-						-- photo has no url, maybee metadata update failed
+						-- photo has no url
 						LrLogger:info(photoFilename..' - skipped: no registration set')
 						countSkipped = countSkipped + 1
 					else
 						-- get old text
 						oldText = photo:getFormattedMetadata('title')
-						-- read aircraft metadata
-						textRegistration = photo:getPropertyForPlugin(_PLUGIN, 'registration')
-						textAirline = photo:getPropertyForPlugin(_PLUGIN, 'airline')
-						textAircraftManufacturer = photo:getPropertyForPlugin(_PLUGIN, 'aircraft_manufacturer')
-						textAircraftType = photo:getPropertyForPlugin(_PLUGIN, 'aircraft_type')
 						-- create new text
-						newText = textRegistration..' | '..textAirline..' | '..textAircraftManufacturer..' '..textAircraftType
+						newText = addToText(photo, '', 'registration', '')
+						newText = addToText(photo, newText, 'airline', ' | ')
+						newText = addToText(photo, newText, 'aircraft_manufacturer', ' | ')
+						newText = addToText(photo, newText, 'aircraft_type', ' ')
 
 						-- check if we need a update
 						if oldText == newText then
@@ -122,5 +119,26 @@ function AircraftWriteTitle()
 	end)
 end
 
+------- writeMetadata() -------------------------------------------------------
+-- read metadata and add it to text
+function addToText(photo, stringInput, fieldName, stringSeperator)
+	local stringOutput = ''
+	local fieldValue = photo:getPropertyForPlugin(_PLUGIN, fieldName)
+	-- check if metadata is nil
+	if fieldValue == nil then
+		-- yes, return input
+		return stringInput
+	else
+		fieldValue = LrStringUtils.trimWhitespace(fieldValue)
+		-- no, check if metadata is set
+		if fieldValue == '' or fieldValue == 'not set' then
+			-- no, return input
+			return stringInput
+		else
+			-- yes create & return output
+			return stringInput..stringSeperator..fieldValue
+		end
+	end
+end
 
 LrTasks.startAsyncTask(AircraftWriteTitle)
