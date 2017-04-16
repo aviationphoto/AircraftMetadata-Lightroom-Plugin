@@ -38,7 +38,7 @@ function AircraftWriteTitle()
 
 	LrFunctionContext.callWithContext("Aircraft Create Title", function(context)
 		-- define progress bar
-		progressScope = LrProgressScope({title = 'Aircraft Create Title'})
+		progressScope = LrProgressScope({title = 'writing Aircraft Metadata to Title'})
 		progressScope:setCancelable(true)
 		-- cleanup if error is thrown
 		context:addCleanupHandler(function()
@@ -47,11 +47,11 @@ function AircraftWriteTitle()
 
 		-- check if user selected at least one photos
 		if catalog:getTargetPhoto() == nil then
-			dialogAction = LrDialogs.confirm('Aircraft Create Title', 'No photo selected - run update on all photos in filmstrip?', 'Yes', 'No')
+			dialogAction = LrDialogs.confirm('Write Aircraft Metadata to Title', 'No photo selected - run update on all photos in filmstrip?', 'Yes', 'No')
 			if dialogAction == 'cancel' then
 				-- cleanup if canceled by user
 				flagRun = false
-				messageEnd = 'Aircraft Create Title canceled'
+				messageEnd = 'Write Aircraft Metadata to Title canceled'
 				LrLogger:info('no active photo selection - user canceled run on entire filmstrip')
 			else
 				LrLogger:info('no active photo selection - running on entire filmstrip')
