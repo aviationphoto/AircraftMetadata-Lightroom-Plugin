@@ -20,7 +20,7 @@ return {
 	LrSdkVersion = 6.0,
 	VERSION = {major=1, minor=4, revision=1,},
 
-	LrPluginName = 'Aircraft Metadata DEV',
+	LrPluginName = 'Aircraft Metadata',
 	LrToolkitIdentifier = 'ch.aviationphoto.aircraftmetadata',
 
 	LrMetadataProvider = 'MetadataProvider.lua',
