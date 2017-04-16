@@ -123,7 +123,7 @@ function AircraftMetadataImport()
 									regNotFoundCache[searchRegistration] = {searchRegistration = searchRegistration}
 								else
 									-- yes, lookup returned something useful
-									foundRegistration = extractMetadata(content, LrPrefs.prefRegistrationToken1, LrPrefs.prefRegistrationToken2)
+									foundRegistration = string.upper(extractMetadata(content, LrPrefs.prefRegistrationToken1, LrPrefs.prefRegistrationToken2))
 									-- check if lookup returned the right registration
 									if searchRegistration == foundRegistration then
 										-- yes, isolate metadata
