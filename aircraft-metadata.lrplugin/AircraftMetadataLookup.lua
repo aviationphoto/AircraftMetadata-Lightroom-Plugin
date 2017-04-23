@@ -229,7 +229,7 @@ function extractMetadata(payload, Token1, Token2)
 		else
 			line = LrStringUtils.trimWhitespace(string.sub(line, 1, posStart - 1))
 			--LrDialogs.message('Lookup Airline - after Token 2', line, 'info')
-			if line == '' then
+			if line == '' or string.lower(line) == 'untitled' or string.lower(line) == 'unknown' then
 				line = 'not set'
 			end
 			return line
