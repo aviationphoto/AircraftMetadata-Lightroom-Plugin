@@ -101,87 +101,16 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 		},
 		-- section lookup settings
 		{
-			title = 'Lookup source',
+			title = 'Aircraft lookup',
 			synopsis = prefs.prefLookupUrl,
 			-- lookup url
 			viewFactory:row {
 				viewFactory:static_text {
-					title = 'URL for lookup',
+					title = 'URL for Aircraft lookup',
 				},
 				viewFactory:edit_field {
 					value = bind {key = 'prefLookupUrl', object = prefs},
 					width_in_chars = 40,
-					wraps = false,
-				},
-			},
-			-- tokens
-			viewFactory:row {
-				viewFactory:static_text {
-					title = 'Registration',
-				},
-				viewFactory:edit_field {
-					value = bind {key = 'prefRegistrationToken1', object = prefs},
-					width_in_chars = 20,
-					wraps = false,
-				},
-				viewFactory:edit_field {
-					value = bind {key = 'prefRegistrationToken2', object = prefs},
-					width_in_chars = 20,
-					wraps = false,
-				},
-			},
-			viewFactory:row {
-				viewFactory:static_text {
-					title = 'Airline',
-				},
-				viewFactory:edit_field {
-					value = bind {key = 'prefAirlineToken1', object = prefs},
-					width_in_chars = 20,
-					wraps = false,
-				},
-				viewFactory:edit_field {
-					value = bind {key = 'prefAirlineToken2', object = prefs},
-					width_in_chars = 20,
-					wraps = false,
-				},
-			},
-			viewFactory:row {
-				viewFactory:static_text {
-					title = 'Aircraft',
-				},
-				viewFactory:edit_field {
-					value = bind {key = 'prefAircraftToken1', object = prefs},
-					width_in_chars = 20,
-					wraps = false,
-				},
-				viewFactory:edit_field {
-					value = bind {key = 'prefAircraftToken2', object = prefs},
-					width_in_chars = 20,
-					wraps = false,
-				},
-			},
-			viewFactory:row {
-				viewFactory:static_text {
-					title = 'Manufacturer',
-				},
-				viewFactory:edit_field {
-					value = bind {key = 'prefManufacturerToken1', object = prefs},
-					width_in_chars = 20,
-					wraps = false,
-				},
-				viewFactory:edit_field {
-					value = bind {key = 'prefManufacturerToken2', object = prefs},
-					width_in_chars = 20,
-					wraps = false,
-				},
-			},
-			viewFactory:row {
-				viewFactory:static_text {
-					title = 'Marker for successful search',
-				},
-				viewFactory:edit_field {
-					value = bind {key = 'prefSuccessfulSearch', object = prefs},
-					width_in_chars = 20,
 					wraps = false,
 				},
 			},
