@@ -105,8 +105,15 @@ function AircraftMetadataImport()
 							if not metadataCache[searchRegistration] then
 								-- no, we need to do a lookup
 								countLookup = countLookup + 1
-								-- lookup metadata on jetphotos
-								flagLookupResult, foundRegistration, foundAirline, foundAircraft, foundAircraftManufacturer, foundAircraftType, lookupURL = lookupMetadataJP(photoLogFilename, searchRegistration)
+								-- invoke metadata provider
+								if LrPrefs.prefMetadataProvider == 'jetphotos' then
+									-- lookup metadata on jetphotos
+									flagLookupResult, foundRegistration, foundAirline, foundAircraft, foundAircraftManufacturer, foundAircraftType, lookupURL = lookupMetadataJP(photoLogFilename, searchRegistration)
+								else
+									progressScope:done()
+									LrLogger:error('no known metadata provider is set')
+									LrErrors.throwUserError('No matching metadata provider is set!')
+								end
 								LrLogger:info(photoLogFilename..' - lookup result: '..flagLookupResult)
 								-- check result of lookup
 								if flagLookupResult == 'success' then

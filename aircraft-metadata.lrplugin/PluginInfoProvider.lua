@@ -99,6 +99,17 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 				},
 			},
 		},
+		-- section metadata provider
+		{
+			title = 'Metadata provider',
+			synopsis = prefs.prefMetadataProvider,
+			-- jetphotos
+			viewFactory:radio_button {
+				title = "JetPhotos",
+				value = bind {key = 'prefMetadataProvider', object = prefs},
+				checked_value = 'jetphotos',
+			},
+		},
 		-- section lookup settings
 		{
 			title = 'Aircraft lookup',

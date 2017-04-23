@@ -102,5 +102,11 @@ function loadPrefs()
 	else
 		LrLogger:info('prefLookupUrl:          '..LrPrefs.prefLookupUrl)
 	end
+	-- metadata provider
+	if (LrPrefs.prefMetadataProvider == nil or LrPrefs.prefMetadataProvider == '') then
+		LrErrors.throwUserError('Please set metadata provider for lookup')
+	else
+		LrLogger:info('prefMetadataProvider:   '..LrPrefs.prefMetadataProvider)
+	end
 	LrLogger:info('-- loading preferences done -------------------')
 end

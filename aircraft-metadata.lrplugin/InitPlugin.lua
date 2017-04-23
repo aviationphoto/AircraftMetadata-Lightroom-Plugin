@@ -32,3 +32,6 @@ end
 if prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '' then
 	prefs.prefLookupUrl = 'https://www.jetphotos.com/registration/'
 end
+if prefs.prefMetadataProvider == nil or prefs.prefMetadataProvider == '' then
+	prefs.prefMetadataProvider = 'jetphotos'
+end
