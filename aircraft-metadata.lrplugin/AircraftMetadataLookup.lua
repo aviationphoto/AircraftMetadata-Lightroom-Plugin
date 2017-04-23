@@ -107,7 +107,7 @@ function AircraftMetadataImport()
 								LrLogger:info(photoLogFilename..' - looking up registration at '..lookupURL..' for: '..searchRegistration)
 								-- do the lookup
 								content = LrHttp.get(lookupURL)
-								--LrDialogs.message(photoLogFilename, content, 'info')
+								--LrLogger:debug('HTTP lookup returned: '..content)
 								-- check if lookup returned something useful
 								if string.find(content, LrPrefs.prefSuccessfulSearch) == nil then
 									-- lookup returned nothing useful
@@ -130,10 +130,17 @@ function AircraftMetadataImport()
 										foundAirline = extractMetadata(content, LrPrefs.prefAirlineToken1, LrPrefs.prefAirlineToken2)
 										foundAircraft = extractMetadata(content, LrPrefs.prefAircraftToken1, LrPrefs.prefAircraftToken2)
 										foundAircraftManufacturer = extractMetadata(content, LrPrefs.prefManufacturerToken1, LrPrefs.prefManufacturerToken2)
-										foundAircraftType = LrStringUtils.trimWhitespace(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
+										-- check is we could isolate Manufacturer
+										if foundAircraftManufacturer == 'not set' then
+											-- no set foundAircraft as fallback
+											foundAircraftType = foundAircraft
+										else
+											-- yes, isolate type
+											foundAircraftType = LrStringUtils.trimWhitespace(string.sub(foundAircraft, string.len(foundAircraftManufacturer)+1, string.len(foundAircraft)))
+										end
 										-- cache found metadata
 										metadataCache[searchRegistration] = {foundRegistration = foundRegistration, foundAirline = foundAirline, foundAircraft = foundAircraft, foundAircraftManufacturer = foundAircraftManufacturer, foundAircraftType = foundAircraftType, lookupURL = lookupURL}
-										LrLogger:info(photoLogFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
+										LrLogger:info(photoLogFilename..' - metadata found: Reg: '..foundRegistration..', Airline: '..foundAirline..', Aircraft: '..foundAircraft..', Manufacturer: '..foundAircraftManufacturer..', Type: '..foundAircraftType)
 									else
 										-- no, lookup returned wrong registration
 										LrLogger:warn(photoLogFilename..' - WRONG REG: lookup returned wrong registration: '..foundRegistration..' instead of '..searchRegistration)
@@ -220,15 +227,17 @@ function extractMetadata(payload, Token1, Token2)
 		LrLogger:error('Token '..Token1..' not found.')
 		LrErrors.throwUserError('Token "'..Token1..'" not found.')
 	else
+		--LrLogger:debug('Token 1: '..Token1..' posStart: '..posStart..' posEnd: '..posEnd)
 		line = string.sub(payload, posEnd + 1)
-		--LrDialogs.message('Lookup Airline - after Token 1', line, 'info')
+		--LrLogger:debug('after Token 1: '..line)
 		posStart, posEnd = string.find(line, Token2)
 		if posStart == nil then
 			LrLogger:error('Token '..Token2..' not found.')
 			LrErrors.throwUserError('Token "'..Token2..'" not found.')
 		else
+			--LrLogger:debug('Token 2: '..Token2..' posStart: '..posStart..' posEnd: '..posEnd)
 			line = LrStringUtils.trimWhitespace(string.sub(line, 1, posStart - 1))
-			--LrDialogs.message('Lookup Airline - after Token 2', line, 'info')
+			--LrLogger:debug('after Token 2: '..line)
 			if line == '' or string.lower(line) == 'untitled' or string.lower(line) == 'unknown' then
 				line = 'not set'
 			end
