@@ -30,7 +30,7 @@ LR Aircraft Metadata can perform a automated metadata lookup against web ressour
 ## Known Issues
 [see Issue tracker](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/issues)
 
-## Copyright
+## License
 Copyright(c) 2017, aviationphoto
 
 LR Aircraft Metadata is free software: you can redistribute it and/or modify
