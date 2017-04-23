@@ -22,25 +22,37 @@ along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 function lookupMetadataJP(photoLogFilename, searchRegistration)
 	local result, foundRegistration, foundAirline, foundAircraft, foundAircraftManufacturer, foundAircraftType, lookupURL
 	local flagLookupResult = ''
+	-- set metadata provider specific variables
+	local baseUrl = 'https://www.jetphotos.com/registration/'
+	local tokenSuccessfulSearch = '>Reg:'
+	local tokenStartRegistration = '/registration/'
+	local tokenEndRegistration = '"'
+	local tokenStartAirline = '/airline/'
+	local tokenEndAirline = '"'
+	local tokenStartAircraft = '/aircraft/'
+	local tokenEndAircraft = '"'
+	local tokenStartManufacturer = '/manufacturer/'
+	local tokenEndManufacturer = '/'
 
-	lookupURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)..searchRegistration
+
+	lookupURL = baseUrl..searchRegistration
 	LrLogger:info(photoLogFilename..' - looking up registration at '..lookupURL..' for: '..searchRegistration)
 	-- do the lookup
 	result = LrHttp.get(lookupURL)
 	--LrLogger:debug('HTTP lookup returned: '..result)
 	-- check if lookup returned something useful
-	if string.find(result, LrPrefs.prefSuccessfulSearch) == nil then
+	if string.find(result, tokenSuccessfulSearch) == nil then
 		-- lookup returned nothing useful
 		flagLookupResult = 'reg_not_found'
 	else
 		-- yes, lookup returned something useful
-		foundRegistration = string.upper(extractMetadata(result, LrPrefs.prefRegistrationToken1, LrPrefs.prefRegistrationToken2))
+		foundRegistration = string.upper(extractMetadata(result, tokenStartRegistration, tokenEndRegistration))
 		-- check if lookup returned the right registration
 		if searchRegistration == foundRegistration then
 			-- yes, isolate metadata
-			foundAirline = extractMetadata(result, LrPrefs.prefAirlineToken1, LrPrefs.prefAirlineToken2)
-			foundAircraft = extractMetadata(result, LrPrefs.prefAircraftToken1, LrPrefs.prefAircraftToken2)
-			foundAircraftManufacturer = extractMetadata(result, LrPrefs.prefManufacturerToken1, LrPrefs.prefManufacturerToken2)
+			foundAirline = extractMetadata(result, tokenStartAirline, tokenEndAirline)
+			foundAircraft = extractMetadata(result, tokenStartAircraft, tokenEndAircraft)
+			foundAircraftManufacturer = extractMetadata(result, tokenStartManufacturer, tokenEndManufacturer)
 			-- check is we could isolate Manufacturer
 			if foundAircraftManufacturer == 'not set' then
 				-- no set foundAircraft as fallback
