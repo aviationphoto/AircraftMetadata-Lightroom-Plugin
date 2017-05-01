@@ -30,7 +30,7 @@ if prefs.prefKeywordWrongReg == nil or prefs.prefKeywordWrongReg == '' then
 	prefs.prefKeywordWrongReg = 'AircraftMetadata-WrongReg'
 end
 if prefs.prefLookupUrl == nil or prefs.prefLookupUrl == '' then
-	prefs.prefLookupUrl = 'https://www.jetphotos.com/registration/'
+	prefs.prefLookupUrl = 'https://www.flightradar24.com/data/aircraft/'
 end
 if prefs.prefMetadataProvider == nil or prefs.prefMetadataProvider == '' then
 	prefs.prefMetadataProvider = 'jetphotos'
