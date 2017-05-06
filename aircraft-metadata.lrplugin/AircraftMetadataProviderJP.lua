@@ -20,7 +20,7 @@ along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------- lookupMetadataJP() ----------------------------------------------------
 -- lookup metadata on jetphotos
 function lookupMetadataJP(photoLogFilename, searchRegistration)
-	local result, foundRegistration, foundAirline, foundAircraft, foundAircraftManufacturer, foundAircraftType, lookupURL
+	local result, foundRegistration, foundAirline, foundAircraft, foundAircraftManufacturer, foundAircraftType, searchURL, lookupURL
 	local flagLookupResult = ''
 	-- set metadata provider specific variables
 	local baseUrl = 'https://www.jetphotos.com/registration/'
@@ -35,10 +35,10 @@ function lookupMetadataJP(photoLogFilename, searchRegistration)
 	local tokenEndManufacturer = '/'
 
 
-	lookupURL = baseUrl..searchRegistration
-	LrLogger:info(photoLogFilename..' - looking up registration at '..lookupURL..' for: '..searchRegistration)
+	searchURL = baseUrl..searchRegistration
+	LrLogger:info(photoLogFilename..' - looking up registration at '..searchURL..' for: '..searchRegistration)
 	-- do the lookup
-	result = LrHttp.get(lookupURL)
+	result = LrHttp.get(searchURL)
 	--LrLogger:debug('HTTP lookup returned: '..result)
 	-- check if lookup returned something useful
 	if string.find(result, tokenSuccessfulSearch) == nil then
@@ -53,6 +53,7 @@ function lookupMetadataJP(photoLogFilename, searchRegistration)
 			foundAirline = extractMetadata(result, tokenStartAirline, tokenEndAirline)
 			foundAircraft = extractMetadata(result, tokenStartAircraft, tokenEndAircraft)
 			foundAircraftManufacturer = extractMetadata(result, tokenStartManufacturer, tokenEndManufacturer)
+			lookupURL = LrStringUtils.trimWhitespace(LrPrefs.prefLookupUrl)..searchRegistration
 			-- check is we could isolate Manufacturer
 			if foundAircraftManufacturer == 'not set' then
 				-- no set foundAircraft as fallback
