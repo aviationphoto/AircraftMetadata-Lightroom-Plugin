@@ -29,3 +29,4 @@ prefs.prefAircraftToken1 = nil
 prefs.prefAircraftToken2 = nil
 prefs.prefManufacturerToken1 = nil
 prefs.prefManufacturerToken2 = nil
+prefs.prefSuccessfulSearch = nil
