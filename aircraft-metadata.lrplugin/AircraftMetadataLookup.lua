@@ -114,7 +114,7 @@ function AircraftMetadataImport()
 									LrLogger:error('no known metadata provider is set')
 									LrErrors.throwUserError('No matching metadata provider is set!')
 								end
-								LrLogger:info(photoLogFilename..' - lookup result: '..flagLookupResult)
+								LrLogger:debug(photoLogFilename..' - lookup result: '..flagLookupResult)
 								-- check result of lookup
 								if flagLookupResult == 'success' then
 									-- lookup successful
@@ -168,10 +168,10 @@ function AircraftMetadataImport()
 							-- write metadata to photo
 							catalog:withWriteAccessDo('set aircraft metadata',
 							function()
-								writeMetadata(photo, 'registration', metadataCache[searchRegistration].foundRegistration)
-								writeMetadata(photo, 'airline', metadataCache[searchRegistration].foundAirline)
-								writeMetadata(photo, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
-								writeMetadata(photo, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
+								writeMetadata(photo, photoLogFilename, 'registration', metadataCache[searchRegistration].foundRegistration)
+								writeMetadata(photo, photoLogFilename, 'airline', metadataCache[searchRegistration].foundAirline)
+								writeMetadata(photo, photoLogFilename, 'aircraft_manufacturer', metadataCache[searchRegistration].foundAircraftManufacturer)
+								writeMetadata(photo, photoLogFilename, 'aircraft_type', metadataCache[searchRegistration].foundAircraftType)
 								-- set aircraft url - we overwrite this in any case
 								photo:setPropertyForPlugin(_PLUGIN, 'aircraft_url', metadataCache[searchRegistration].lookupURL)
 								-- remove keywords if set
@@ -198,7 +198,7 @@ end
 
 ------- writeMetadata() -------------------------------------------------------
 -- write metadata to db fields
-function writeMetadata(photo, fieldName, fieldValue)
+function writeMetadata(photo, photoLogFilename, fieldName, fieldValue)
 	-- check if field is empty
 	if photo:getPropertyForPlugin(_PLUGIN, fieldName) == nil then
 		-- yes, write to empty field
@@ -208,6 +208,9 @@ function writeMetadata(photo, fieldName, fieldValue)
 		if LrPrefs.prefFlagOverwrite then
 			-- yes, overwrite existing entry
 			photo:setPropertyForPlugin(_PLUGIN, fieldName, fieldValue)
+		else
+			-- no, skip & log
+			LrLogger:debug(photoLogFilename..' - '..fieldName..' contains data - skipping write')
 		end
 	end
 end

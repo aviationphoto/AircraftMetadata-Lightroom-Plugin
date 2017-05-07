@@ -77,36 +77,36 @@ end
 ------- loadPrefs() -----------------------------------------------------------
 -- load saved preferences
 function loadPrefs()
-	LrLogger:info('-- loading preferences ------------------------')
+	LrLogger:debug('-- loading preferences ------------------------')
 	-- lookup prefFlagOverwrite
 	if (LrPrefs.prefFlagOverwrite == nil) then
 		LrErrors.throwUserError('Please set Overwrite preference')
 	else
-		LrLogger:info('prefFlagOverwrite:      '..tostring(LrPrefs.prefFlagOverwrite))
+		LrLogger:debug('prefFlagOverwrite:      '..tostring(LrPrefs.prefFlagOverwrite))
 	end
 	-- lookup KeywordRegNotFound
 	if (LrPrefs.prefKeywordRegNotFound == nil or LrPrefs.prefKeywordRegNotFound == '') then
 		LrErrors.throwUserError('Please set KeywordRegNotFound')
 	else
-		LrLogger:info('prefKeywordRegNotFound: '..LrPrefs.prefKeywordRegNotFound)
+		LrLogger:debug('prefKeywordRegNotFound: '..LrPrefs.prefKeywordRegNotFound)
 	end
 	-- lookup KeywordWrongReg
 	if (LrPrefs.prefKeywordWrongReg == nil or LrPrefs.prefKeywordWrongReg == '') then
 		LrErrors.throwUserError('Please set KeywordWrongReg')
 	else
-		LrLogger:info('prefKeywordWrongReg:    '..LrPrefs.prefKeywordWrongReg)
+		LrLogger:debug('prefKeywordWrongReg:    '..LrPrefs.prefKeywordWrongReg)
 	end
 	-- lookup URL
 	if (LrPrefs.prefLookupUrl == nil or LrPrefs.prefLookupUrl == '') then
 		LrErrors.throwUserError('Please set URL for lookup')
 	else
-		LrLogger:info('prefLookupUrl:          '..LrPrefs.prefLookupUrl)
+		LrLogger:debug('prefLookupUrl:          '..LrPrefs.prefLookupUrl)
 	end
 	-- metadata provider
 	if (LrPrefs.prefMetadataProvider == nil or LrPrefs.prefMetadataProvider == '') then
 		LrErrors.throwUserError('Please set metadata provider for lookup')
 	else
-		LrLogger:info('prefMetadataProvider:   '..LrPrefs.prefMetadataProvider)
+		LrLogger:debug('prefMetadataProvider:   '..LrPrefs.prefMetadataProvider)
 	end
-	LrLogger:info('-- loading preferences done -------------------')
+	LrLogger:debug('-- loading preferences done -------------------')
 end
