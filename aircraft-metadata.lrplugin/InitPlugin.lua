@@ -23,6 +23,9 @@ end
 if prefs.prefFlagOverwrite == nil then
 	prefs.prefFlagOverwrite = false
 end
+if prefs.prefFlagWriteTitle == nil then
+	prefs.prefFlagWriteTitle = false
+end
 if prefs.prefKeywordRegNotFound == nil or prefs.prefKeywordRegNotFound == '' then
 	prefs.prefKeywordRegNotFound = 'AircraftMetadata-RegNotFound'
 end

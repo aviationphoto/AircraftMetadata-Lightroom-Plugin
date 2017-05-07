@@ -84,6 +84,12 @@ function loadPrefs()
 	else
 		LrLogger:debug('prefFlagOverwrite:      '..tostring(LrPrefs.prefFlagOverwrite))
 	end
+	-- lookup prefFlagOverwrite
+	if (LrPrefs.prefFlagWriteTitle == nil) then
+		LrErrors.throwUserError('Please set write to title preference')
+	else
+		LrLogger:debug('prefFlagWriteTitle:     '..tostring(LrPrefs.prefFlagWriteTitle))
+	end
 	-- lookup KeywordRegNotFound
 	if (LrPrefs.prefKeywordRegNotFound == nil or LrPrefs.prefKeywordRegNotFound == '') then
 		LrErrors.throwUserError('Please set KeywordRegNotFound')
