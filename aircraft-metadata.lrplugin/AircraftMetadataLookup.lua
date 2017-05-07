@@ -178,6 +178,11 @@ function AircraftMetadataImport()
 								photo:removeKeyword(keywordRegNotFound)
 								photo:removeKeyword(keywordWrongReg)
 							end)
+							-- check if user allows to write metadata to title
+							if LrPrefs.prefFlagWriteTitle then
+								-- create and write metadata to title
+								writeTextField('title', catalog, photo, photoLogFilename)
+							end
 						end
 					else
 						-- photo has no registration
