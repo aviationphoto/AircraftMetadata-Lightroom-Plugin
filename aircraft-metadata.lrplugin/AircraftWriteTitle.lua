@@ -33,8 +33,7 @@ function AircraftWriteTitle()
 	local countProcessed = 0
 	local countSkipped = 0
 	local flagRun = true
-	local progressScope, dialogAction, photo, photoLogFilename, oldText, newText
-	local textRegistration, textAirline, textAircraftManufacturer, textAircraftType
+	local progressScope, dialogAction, photo, photoLogFilename, textRegistration, textAirline, textAircraftManufacturer, textAircraftType
 
 	LrFunctionContext.callWithContext("Aircraft Create Title", function(context)
 		-- define progress bar
@@ -81,27 +80,7 @@ function AircraftWriteTitle()
 						LrLogger:info(photoLogFilename..' - skipped: no registration set')
 						countSkipped = countSkipped + 1
 					else
-						-- get old text
-						oldText = photo:getFormattedMetadata('title')
-						-- create new text
-						newText = addToText(photo, '', 'registration', '')
-						newText = addToText(photo, newText, 'airline', ' | ')
-						newText = addToText(photo, newText, 'aircraft_manufacturer', ' | ')
-						newText = addToText(photo, newText, 'aircraft_type', ' ')
-
-						-- check if we need a update
-						if oldText == newText then
-							-- no
-							LrLogger:info(photoLogFilename..' - '..oldText..' is fine, no update necessary')
-						else
-							-- yes
-							catalog:withWriteAccessDo('set aircraft title',
-								function()
-									photo:setRawMetadata('title', newText)
-								end
-							)
-							LrLogger:info(photoLogFilename..' - title updated: '..newText)
-						end
+						writeTextField('title', catalog, photo, photoLogFilename)
 					end
 					progressScope:setPortionComplete(countProcessed, countSelected)
 				end
@@ -114,7 +93,34 @@ function AircraftWriteTitle()
 	end)
 end
 
-------- writeMetadata() -------------------------------------------------------
+------- writeTextField() --------------------------------------------------
+-- create and write text to field
+function writeTextField(fieldName, catalog, photo, photoLogFilename)
+	local stringOld, stringNew
+	-- get old text
+	stringOld = photo:getFormattedMetadata(fieldName)
+	-- create new text
+	stringNew = addToText(photo, '', 'registration', '')
+	stringNew = addToText(photo, stringNew, 'airline', ' | ')
+	stringNew = addToText(photo, stringNew, 'aircraft_manufacturer', ' | ')
+	stringNew = addToText(photo, stringNew, 'aircraft_type', ' ')
+	stringNew = LrStringUtils.trimWhitespace(stringNew)
+	-- check if we need a update
+	if stringOld == stringNew then
+		-- no
+		LrLogger:info(photoLogFilename..' - '..stringOld..' is fine, no update necessary')
+	else
+		-- yes
+		catalog:withWriteAccessDo('set aircraft title',
+			function()
+				photo:setRawMetadata(fieldName, stringNew)
+			end
+		)
+		LrLogger:info(photoLogFilename..' - title updated: '..stringNew)
+	end
+end
+
+------- addToText() -------------------------------------------------------
 -- read metadata and add it to text
 function addToText(photo, stringInput, fieldName, stringSeperator)
 	local stringOutput = ''
