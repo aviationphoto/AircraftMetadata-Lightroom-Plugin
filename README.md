@@ -16,10 +16,7 @@ LR Aircraft Metadata is a plugin for storing and handling Aircraft Metadata in y
 see [Wiki](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/wiki/Installation) for installation instructions
 
 ## Usage
-LR Aircraft Metadata can perform a automated metadata lookup against web ressources
-* Enter aircraft registration into field "Registration"
-* Select all photos for which you want to perform a metadata lookup
-* Select "Lookup Aircraft Metadata" from the Plug-in extras menu
+see [[Wiki]] for how to use
 
 ## Known Issues
 [see Issue tracker](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/issues)
