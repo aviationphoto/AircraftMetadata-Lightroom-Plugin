@@ -135,13 +135,18 @@ function writeTextField(fieldName, catalog, photo, photoLogFilename)
 		-- no
 		LrLogger:info(photoLogFilename..' - '..stringOld..' is fine, no update necessary')
 	else
-		-- yes
-		catalog:withWriteAccessDo('set aircraft title',
-			function()
-				photo:setRawMetadata(fieldName, stringNew)
-			end
-		)
-		LrLogger:info(photoLogFilename..' - title updated: '..stringNew)
+		-- yes, check if user allows overwrite of existing value
+		if LrPrefs.prefFlagOverwrite or (stringOld == nil or stringOld == '') then
+			catalog:withWriteAccessDo('set aircraft title',
+				function()
+					photo:setRawMetadata(fieldName, stringNew)
+				end
+			)
+			LrLogger:info(photoLogFilename..' - '..fieldName..' updated: '..stringNew)
+		else
+			-- no, skip & log
+			LrLogger:debug(photoLogFilename..' - '..fieldName..' contains data - skipping write')
+		end
 	end
 end
 
