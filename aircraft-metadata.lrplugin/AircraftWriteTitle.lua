@@ -80,6 +80,7 @@ function AircraftWriteTitle()
 						LrLogger:info(photoLogFilename..' - skipped: no registration set')
 						countSkipped = countSkipped + 1
 					else
+						-- create and write metadata to title
 						writeTextField('title', catalog, photo, photoLogFilename)
 					end
 					progressScope:setPortionComplete(countProcessed, countSelected)
