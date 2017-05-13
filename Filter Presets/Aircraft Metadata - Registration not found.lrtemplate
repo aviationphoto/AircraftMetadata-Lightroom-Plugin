@@ -1,0 +1,47 @@
+s = {
+	id = "10C57A5B-4A2F-4ECC-A5B9-7F83A65E7A5D",
+	internalName = "Aircraft Metadata - Registration not found",
+	title = "Aircraft Metadata - Registration not found",
+	type = "LibraryFilter",
+	value = {
+		columnBrowserActive = false,
+		columnBrowserDesc = {
+			{
+				criteria = "dateHierarchy",
+			},
+			{
+				criteria = "camera",
+			},
+			{
+				criteria = "lens",
+			},
+			{
+				criteria = "label",
+			},
+		},
+		customLabel = false,
+		filtersActive = false,
+		gpsLocation = false,
+		gpsLocationNELatitude = 47.459396028458,
+		gpsLocationNELongitude = 8.5552622461242,
+		gpsLocationSWLatitude = 47.450980830583,
+		gpsLocationSWLongitude = 8.5362292909546,
+		label1 = false,
+		label2 = false,
+		label3 = false,
+		label4 = false,
+		label5 = false,
+		labelOp = "any",
+		minRating = "<nil>",
+		noLabel = false,
+		pick = "<nil>",
+		ratingOp = ">=",
+		searchOp = "any",
+		searchString = "RegNotFound",
+		searchStringActive = true,
+		searchTarget = "keywords",
+		usage = "<nil>",
+		whichCopies = "virtualCopies",
+	},
+	version = 0,
+}
