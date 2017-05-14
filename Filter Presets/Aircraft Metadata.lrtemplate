@@ -1,6 +1,6 @@
 s = {
 	id = "0E6811DF-2B2C-414F-98D3-5DBE15333220",
-	internalName = "80 Aircraft Metadata",
+	internalName = "Aircraft Metadata",
 	title = "Aircraft Metadata",
 	type = "LibraryFilter",
 	value = {
