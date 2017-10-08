@@ -59,19 +59,23 @@ function sectionsForTopOfDialog(viewFactory, propertyTable)
 		},
 		-- section overwrite settings
 		{
-			title = 'Overwrite Settings',
+			title = 'Metadata handling',
 			synopsis = synopsisOverwrite,
 			-- overwrite
 			viewFactory:row {
 				viewFactory:checkbox {
-					title = 'Overwrite existing metadata ',
+					title = 'Overwrite existing values ',
 					value = bind {key = 'prefFlagOverwrite', object = prefs},
 				},
 			},
+			-- write to title
 			viewFactory:row {
-				viewFactory:separator {
-					fill_horizontal = 1},
+				viewFactory:checkbox {
+					title = 'After lookup, write metadata to photo title ',
+					value = bind {key = 'prefFlagWriteTitle', object = prefs},
+				},
 			},
+
 		},
 		-- section tagging settings
 		{

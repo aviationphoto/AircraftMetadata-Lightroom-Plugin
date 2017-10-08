@@ -21,8 +21,8 @@ return {
 	id = 'ch.aviationphoto.aircraftmetadatatagset.extended',
 
 	items = {
-		{formatter = 'com.adobe.title', height_in_lines=3},
-		{formatter = 'com.adobe.caption', height_in_lines=3},
+		{formatter = 'com.adobe.title', height_in_lines=3, topLabel=true},
+		{formatter = 'com.adobe.caption', height_in_lines=3, topLabel=true},
 		'com.adobe.separator',
 		{formatter = "com.adobe.label", label = "Aircraft",},
 		'ch.aviationphoto.aircraftmetadata.registration',

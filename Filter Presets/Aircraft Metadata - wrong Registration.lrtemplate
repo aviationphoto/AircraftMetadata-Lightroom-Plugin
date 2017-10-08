@@ -1,0 +1,47 @@
+s = {
+	id = "A72462ED-5356-441C-9245-4BE5F494DF34",
+	internalName = "Aircraft Metadata - wrong Registration",
+	title = "Aircraft Metadata - wrong Registration",
+	type = "LibraryFilter",
+	value = {
+		columnBrowserActive = false,
+		columnBrowserDesc = {
+			{
+				criteria = "dateHierarchy",
+			},
+			{
+				criteria = "camera",
+			},
+			{
+				criteria = "lens",
+			},
+			{
+				criteria = "label",
+			},
+		},
+		customLabel = false,
+		filtersActive = false,
+		gpsLocation = false,
+		gpsLocationNELatitude = "<nil>",
+		gpsLocationNELongitude = "<nil>",
+		gpsLocationSWLatitude = "<nil>",
+		gpsLocationSWLongitude = "<nil>",
+		label1 = false,
+		label2 = false,
+		label3 = false,
+		label4 = false,
+		label5 = false,
+		labelOp = "any",
+		minRating = "<nil>",
+		noLabel = false,
+		pick = "<nil>",
+		ratingOp = ">=",
+		searchOp = "any",
+		searchString = "WrongReg",
+		searchStringActive = true,
+		searchTarget = "keywords",
+		usage = "<nil>",
+		whichCopies = "virtualCopies",
+	},
+	version = 0,
+}

@@ -36,7 +36,7 @@ function lookupMetadataJP(photoLogFilename, searchRegistration)
 
 
 	searchURL = baseUrl..searchRegistration
-	LrLogger:info(photoLogFilename..' - looking up registration at '..searchURL..' for: '..searchRegistration)
+	LrLogger:debug(photoLogFilename..' - looking up registration at '..searchURL..' for: '..searchRegistration)
 	-- do the lookup
 	result = LrHttp.get(searchURL)
 	--LrLogger:debug('HTTP lookup returned: '..result)

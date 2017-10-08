@@ -77,36 +77,97 @@ end
 ------- loadPrefs() -----------------------------------------------------------
 -- load saved preferences
 function loadPrefs()
-	LrLogger:info('-- loading preferences ------------------------')
+	LrLogger:debug('-- loading preferences ------------------------')
 	-- lookup prefFlagOverwrite
 	if (LrPrefs.prefFlagOverwrite == nil) then
 		LrErrors.throwUserError('Please set Overwrite preference')
 	else
-		LrLogger:info('prefFlagOverwrite:      '..tostring(LrPrefs.prefFlagOverwrite))
+		LrLogger:debug('prefFlagOverwrite:      '..tostring(LrPrefs.prefFlagOverwrite))
+	end
+	-- lookup prefFlagOverwrite
+	if (LrPrefs.prefFlagWriteTitle == nil) then
+		LrErrors.throwUserError('Please set write to title preference')
+	else
+		LrLogger:debug('prefFlagWriteTitle:     '..tostring(LrPrefs.prefFlagWriteTitle))
 	end
 	-- lookup KeywordRegNotFound
 	if (LrPrefs.prefKeywordRegNotFound == nil or LrPrefs.prefKeywordRegNotFound == '') then
 		LrErrors.throwUserError('Please set KeywordRegNotFound')
 	else
-		LrLogger:info('prefKeywordRegNotFound: '..LrPrefs.prefKeywordRegNotFound)
+		LrLogger:debug('prefKeywordRegNotFound: '..LrPrefs.prefKeywordRegNotFound)
 	end
 	-- lookup KeywordWrongReg
 	if (LrPrefs.prefKeywordWrongReg == nil or LrPrefs.prefKeywordWrongReg == '') then
 		LrErrors.throwUserError('Please set KeywordWrongReg')
 	else
-		LrLogger:info('prefKeywordWrongReg:    '..LrPrefs.prefKeywordWrongReg)
+		LrLogger:debug('prefKeywordWrongReg:    '..LrPrefs.prefKeywordWrongReg)
 	end
 	-- lookup URL
 	if (LrPrefs.prefLookupUrl == nil or LrPrefs.prefLookupUrl == '') then
 		LrErrors.throwUserError('Please set URL for lookup')
 	else
-		LrLogger:info('prefLookupUrl:          '..LrPrefs.prefLookupUrl)
+		LrLogger:debug('prefLookupUrl:          '..LrPrefs.prefLookupUrl)
 	end
 	-- metadata provider
 	if (LrPrefs.prefMetadataProvider == nil or LrPrefs.prefMetadataProvider == '') then
 		LrErrors.throwUserError('Please set metadata provider for lookup')
 	else
-		LrLogger:info('prefMetadataProvider:   '..LrPrefs.prefMetadataProvider)
+		LrLogger:debug('prefMetadataProvider:   '..LrPrefs.prefMetadataProvider)
 	end
-	LrLogger:info('-- loading preferences done -------------------')
+	LrLogger:debug('-- loading preferences done -------------------')
+end
+
+
+------- writeTextField() --------------------------------------------------
+-- create and write text to field, used for writing metadata to title or caption
+function writeTextField(fieldName, catalog, photo, photoLogFilename)
+	local stringOld, stringNew
+	-- get old text
+	stringOld = photo:getFormattedMetadata(fieldName)
+	-- create new text
+	stringNew = addToText(photo, '', 'registration', '')
+	stringNew = addToText(photo, stringNew, 'airline', ' | ')
+	stringNew = addToText(photo, stringNew, 'aircraft_manufacturer', ' | ')
+	stringNew = addToText(photo, stringNew, 'aircraft_type', ' ')
+	stringNew = LrStringUtils.trimWhitespace(stringNew)
+	-- check if we need a update
+	if stringOld == stringNew then
+		-- no
+		LrLogger:info(photoLogFilename..' - '..stringOld..' is fine, no update necessary')
+	else
+		-- yes, check if user allows overwrite of existing value
+		if LrPrefs.prefFlagOverwrite or (stringOld == nil or stringOld == '') then
+			catalog:withWriteAccessDo('set aircraft title',
+				function()
+					photo:setRawMetadata(fieldName, stringNew)
+				end
+			)
+			LrLogger:info(photoLogFilename..' - '..fieldName..' updated: '..stringNew)
+		else
+			-- no, skip & log
+			LrLogger:debug(photoLogFilename..' - '..fieldName..' contains data - skipping write')
+		end
+	end
+end
+
+------- addToText() -------------------------------------------------------
+-- read metadata and add it to text, used for writing metadata to title or caption
+function addToText(photo, stringInput, fieldName, stringSeperator)
+	local stringOutput = ''
+	local fieldValue = photo:getPropertyForPlugin(_PLUGIN, fieldName)
+	-- check if metadata is nil
+	if fieldValue == nil then
+		-- yes, return input
+		return stringInput
+	else
+		-- no, check if some useful metadata is set
+		fieldValue = LrStringUtils.trimWhitespace(fieldValue)
+		if fieldValue == '' or fieldValue == 'not set' then
+			-- no, return input
+			return stringInput
+		else
+			-- yes create & return output
+			return stringInput..stringSeperator..fieldValue
+		end
+	end
 end
