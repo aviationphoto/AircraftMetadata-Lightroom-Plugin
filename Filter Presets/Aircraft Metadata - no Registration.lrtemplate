@@ -1,0 +1,43 @@
+s = {
+	id = "6471BFE2-383B-4DFE-B0CB-EE4AAC2C4274",
+	internalName = "Aircraft Metadata - no Registration",
+	title = "Aircraft Metadata - no Registration",
+	type = "LibraryFilter",
+	value = {
+		columnBrowserActive = true,
+		columnBrowserDesc = {
+			{
+				criteria = "sdktext:ch.aviationphoto.aircraftmetadata.registration",
+				selections = {
+					{
+						"kNilSentinel",
+					},
+				},
+			},
+		},
+		customLabel = false,
+		filtersActive = false,
+		gpsLocation = false,
+		gpsLocationNELatitude = "<nil>",
+		gpsLocationNELongitude = "<nil>",
+		gpsLocationSWLatitude = "<nil>",
+		gpsLocationSWLongitude = "<nil>",
+		label1 = false,
+		label2 = false,
+		label3 = false,
+		label4 = false,
+		label5 = false,
+		labelOp = "any",
+		minRating = 0,
+		noLabel = false,
+		pick = "<nil>",
+		ratingOp = ">=",
+		searchOp = "all",
+		searchString = "",
+		searchStringActive = false,
+		searchTarget = "all",
+		usage = "<nil>",
+		whichCopies = "<nil>",
+	},
+	version = 0,
+}
