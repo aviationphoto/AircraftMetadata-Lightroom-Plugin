@@ -18,7 +18,7 @@ along with LR Aircraft Metadata.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------------]]
 return {
 	LrSdkVersion = 6.0,
-	VERSION = {major=1, minor=5, revision=2,},
+	VERSION = {major=1, minor=5, revision=3,},
 
 	LrPluginName = 'Aircraft Metadata DEV',
 	LrToolkitIdentifier = 'ch.aviationphoto.aircraftmetadata',
