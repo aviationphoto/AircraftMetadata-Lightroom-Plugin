@@ -29,6 +29,7 @@ function AircraftMetadataImport()
 	-- initialize variables
 	local catalog = LrApplication.activeCatalog()
 	local selectedPhotos = catalog:getTargetPhotos()
+	local messageStart = 'looking up Aircraft Metadata'
 	local messageEnd = 'Aircraft Metadata Lookup finished'
 	local metadataCache = {}
 	local regNotFoundCache = {}
@@ -80,6 +81,7 @@ function AircraftMetadataImport()
 			for _ in pairs(selectedPhotos) do
 				countSelected = countSelected + 1
 			end
+			LrDialogs.showBezel(messageStart)
 			LrLogger:info('performing lookup for '..countSelected..' selected photos')
 			-- loop through each of the photos
 			for _, photo in ipairs (selectedPhotos) do
