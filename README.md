@@ -4,6 +4,8 @@
 [![GitHub Release Date](https://img.shields.io/github/release-date/aviationphoto/AircraftMetadata-Lightroom-Plugin)](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/releases/latest) 
 [![GitHub commits since latest release](https://img.shields.io/github/commits-since/aviationphoto/AircraftMetadata-Lightroom-Plugin/latest)](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/commits/master) 
 [![license](https://img.shields.io/github/license/aviationphoto/AircraftMetadata-Lightroom-Plugin)](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/blob/master/LICENSE) 
+[![MacOS](https://img.shields.io/badge/MacOS-supported-brightgreen.svg)](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/wiki) 
+[![Windows](https://img.shields.io/badge/Windows-supported-brightgreen.svg)](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/wiki) 
 
 ## Overview
 LR Aircraft Metadata is a plugin for storing and handling Aircraft Metadata in your Lightroom catalog.
