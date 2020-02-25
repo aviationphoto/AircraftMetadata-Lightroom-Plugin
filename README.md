@@ -19,7 +19,7 @@ It provides a Filter Preset for filtering your photos.
 ![Filter Preset](/images/filter_preset.png)
 
 ## Requirements
-* Lightroom 6/CC
+* Lightroom Classic 6 or later
 
 ## Installation
 see [Wiki](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/wiki/Installation) for installation instructions
@@ -31,7 +31,7 @@ see [Wiki](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/wi
 see [Issue tracker](https://github.com/aviationphoto/AircraftMetadata-Lightroom-Plugin/issues) for known issues
 
 ## License
-Copyright(c) 2017, aviationphoto
+Copyright(c) 2017-2020, aviationphoto
 
 LR Aircraft Metadata is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
